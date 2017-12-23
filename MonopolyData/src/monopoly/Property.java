@@ -1,13 +1,8 @@
 package monopoly;
 
 public class Property {
-	private int propId;
+	// That's it.
+	// Actions here are determined by the board, not by the property.
 	
-	public Property(int cPropId) {
-		propId = cPropId;
-	}
-	
-	public int getPropId() {
-		return propId;
-	}
+	// Ex. if a player lands on index 2 (CC1) then the board says they can draw.
 }

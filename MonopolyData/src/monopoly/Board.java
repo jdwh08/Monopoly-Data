@@ -11,8 +11,48 @@ public class Board {
 	int numHotelsLeft;
 	
 	public Board() {
+		boardProperties = new Property[40];
+		
+		Property go = new Property();
+		boardProperties[0] = go;
+		
+		int[] medAvePay = {2,10,30,90,160,250};
+		Property medAve = new ColorProperty(60, 30, null, false, Color.MAGENTA, 0, false, medAvePay);
+		boardProperties[1] = medAve;
+		
+		Property cc1 = new Property();
+		boardProperties[2] = cc1;
+		
+		int[] balticAvePay = {4,20,60,180,320,450};
+		Property balticAve = new ColorProperty(60, 30, null, false, Color.MAGENTA, 0, false, balticAvePay);
+		boardProperties[3] = balticAve;
+		
+		Property incomeTax = new Property();
+		boardProperties[4] = incomeTax;
+		
+		Railroad readingRR = new Railroad(200, 100, null, false);
+		boardProperties[5] = readingRR;
+		
+		int[] orientalAvePay = {6,30,90,270,400,550};
+		Property orientalAve = new ColorProperty(100, 50, null, false, Color.CYAN, 0, false, orientalAvePay);
+		boardProperties[6] = orientalAve;
+		
+		Property chance1 = new Property();
+		boardProperties[7] = chance1;
+		
+		int[] vermontAvePay = {6,30,90,270,400,550};
+		Property vermontAve = new ColorProperty(100, 50, null, false, Color.CYAN, 0, false, vermontAvePay);
+		boardProperties[8] = vermontAve;
+		
+		int[] connecticutAvePay = {8,40,100,300,450,600};
+		Property connecticutAve = new ColorProperty(120, 60, null, false, Color.CYAN, 0, false, connecticutAvePay);
+		boardProperties[9] = connecticutAve;
+		
+		Property jail = new Property();
+		boardProperties[10] = jail;
+		
 		// TODO:
-		// Instantiate every single board property and then put it in the array
+		// Add the rest of the properties
 		
 		numHousesLeft = 32;
 		numHotelsLeft = 12;

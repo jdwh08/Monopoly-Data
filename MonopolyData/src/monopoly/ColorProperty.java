@@ -1,7 +1,6 @@
 package monopoly;
 
 import java.awt.Color;
-import java.util.HashMap;
 
 public class ColorProperty extends OwnableProperty {
 	private Color propColor;
@@ -9,8 +8,8 @@ public class ColorProperty extends OwnableProperty {
 	private boolean hasHotel;
 	private int[] payTable;
 	
-	public ColorProperty(int cPropId, int cCost, int cMortgageCost, Player cOwner, boolean cIsMortgaged, Color cPropColor, int cNumHouses, boolean cHasHotel, int[] cPayTable) {
-		super(cPropId, cCost, cMortgageCost, cOwner, cIsMortgaged);
+	public ColorProperty(int cCost, int cMortgageCost, Player cOwner, boolean cIsMortgaged, Color cPropColor, int cNumHouses, boolean cHasHotel, int[] cPayTable) {
+		super(cCost, cMortgageCost, cOwner, cIsMortgaged);
 		
 		numHouses = cNumHouses;
 		hasHotel = cHasHotel;
