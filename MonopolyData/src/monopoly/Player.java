@@ -13,7 +13,12 @@ public abstract class Player {
 	public int getMoney() {
 		return money;
 	}
+	
 	public void addMoney(int addedMoney) {
 		this.money = addedMoney;
+	}
+	
+	public boolean isInJail() {
+		return inJail;
 	}
 }
