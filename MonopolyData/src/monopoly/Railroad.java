@@ -2,8 +2,8 @@ package monopoly;
 
 public class Railroad extends OwnableProperty {
 
-	public Railroad(int cCost, int cMortgageCost, Player cOwner, boolean cIsMortgaged) {
-		super(cCost, cMortgageCost, cOwner, cIsMortgaged);
+	public Railroad(int cCost, Player cOwner, boolean cIsMortgaged) {
+		super(cCost, cOwner, cIsMortgaged);
 	}
 	
 	@Override

@@ -6,9 +6,9 @@ public class OwnableProperty extends Property {
 	Player owner;
 	boolean isMortgaged;
 	
-	public OwnableProperty(int cCost, int cMortgageCost, Player cOwner, boolean cIsMortgaged) {		
+	public OwnableProperty(int cCost, Player cOwner, boolean cIsMortgaged) {		
 		cost = cCost;
-		mortgageCost = cMortgageCost;
+		mortgageCost = cCost / 2;
 		owner = cOwner;
 		isMortgaged = cIsMortgaged;
 	}

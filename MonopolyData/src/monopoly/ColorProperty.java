@@ -8,8 +8,8 @@ public class ColorProperty extends OwnableProperty {
 	private boolean hasHotel;
 	private int[] payTable;
 	
-	public ColorProperty(int cCost, int cMortgageCost, Player cOwner, boolean cIsMortgaged, Color cPropColor, int cNumHouses, boolean cHasHotel, int[] cPayTable) {
-		super(cCost, cMortgageCost, cOwner, cIsMortgaged);
+	public ColorProperty(int cCost, Player cOwner, boolean cIsMortgaged, Color cPropColor, int cNumHouses, boolean cHasHotel, int[] cPayTable) {
+		super(cCost, cOwner, cIsMortgaged);
 		
 		numHouses = cNumHouses;
 		hasHotel = cHasHotel;

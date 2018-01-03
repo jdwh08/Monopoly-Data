@@ -2,8 +2,8 @@ package monopoly;
 
 public class Utility extends OwnableProperty {
 	
-	public Utility(int cPropId, int cCost, int cMortgageCost, Player cOwner, boolean cIsMortgaged) {
-		super(cPropId, cCost, cMortgageCost, cOwner, cIsMortgaged);
+	public Utility(int cCost, Player cOwner, boolean cIsMortgaged) {
+		super(cCost, cOwner, cIsMortgaged);
 	}
 	
 	@Override
