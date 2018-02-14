@@ -1,5 +1,7 @@
 package monopoly;
 
+import players.Player;
+
 public class OwnableProperty extends Property {
 	private int cost;
 	private int mortgageCost;
@@ -34,7 +36,12 @@ public class OwnableProperty extends Property {
 		return owner;
 	}
 	
-	public void changeOwner(Player newOwner) {
+	public void setOwner(Player newOwner) {
 		owner = newOwner;
+	}
+	
+	@Override
+	public String getPropType() {
+		return "OwnableProperty";
 	}
 }

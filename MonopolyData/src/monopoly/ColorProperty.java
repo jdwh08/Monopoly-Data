@@ -2,6 +2,8 @@ package monopoly;
 
 import java.awt.Color;
 
+import players.Player;
+
 public class ColorProperty extends OwnableProperty {
 	private Color propColor;
 	private int numHouses;
@@ -43,5 +45,10 @@ public class ColorProperty extends OwnableProperty {
 	
 	public boolean hasHotel() {
 		return hasHotel;
+	}
+	
+	@Override
+	public String getPropType() {
+		return "ColorProperty";
 	}
 }

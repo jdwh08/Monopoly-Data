@@ -1,4 +1,4 @@
-package monopoly;
+package players;
 
 public class SemiRandomPlayer extends Player {
 	

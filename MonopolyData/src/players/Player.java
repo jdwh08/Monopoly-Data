@@ -1,6 +1,8 @@
-package monopoly;
+package players;
 
 import java.util.ArrayList;
+
+import monopoly.Property;
 
 public abstract class Player {
 	private int money;

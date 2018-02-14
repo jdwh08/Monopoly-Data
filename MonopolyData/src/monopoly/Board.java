@@ -1,6 +1,11 @@
 package monopoly;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import players.Player;
+import players.SemiRandomPlayer;
 
 public class Board {
 	
@@ -9,15 +14,22 @@ public class Board {
 	private CardPile communityChest;
 	int numHousesLeft;
 	int numHotelsLeft;
+	HashMap<Player, Integer> playerLocs;
+	// TODO: Current Player Stuff. Current Player is probably in the runner.
 	
 	public Board() {
 		initializeProperties();
 
 		numHousesLeft = 32;
 		numHotelsLeft = 12;
+		Player srp1 = new SemiRandomPlayer();
+		Player srp2 = new SemiRandomPlayer();
+		playerLocs = new HashMap<Player, Integer>();
+		playerLocs.put(srp1, 0);
+		playerLocs.put(srp2, 0);
 	}
 	
-	public void initializeProperties() {
+	private void initializeProperties() {
 		boardProperties = new Property[40];
 		
 		Property go = new Property();
@@ -163,71 +175,110 @@ public class Board {
 		boardProperties[39] = boardwalk;
 	}
 	
-	// TODO: 
-	// Create a method for getProperty() which gets the property based on where the player is.
-	
 	public Property getProperty(int id) {
 		return boardProperties[id];
+	}
+	
+	public Property getProperty(Player thePlayer) {
+		int index = playerLocs.get(thePlayer);
+		return boardProperties[index];
 	}
 	
 	public static int rollDice() {
 		return (int) ((Math.random() * 5 + 1) + (Math.random() * 5 + 1));
 	}
 	
-	public void move() {
-		// TODO:
-		// Make the player move
+	protected void move(Player thePlayer) {
+		int moveDist = rollDice();
+		
+		// Wrap around GO
+		if (moveDist + playerLocs.get(thePlayer) > 39) {
+			playerLocs.put(thePlayer, moveDist + playerLocs.get(thePlayer) - 40);
+		}
+		// Normal
+		else {
+			playerLocs.put(thePlayer, moveDist + playerLocs.get(thePlayer));
+		}
 	}
 	
-	public void moveTo(int propId) {
-		// TODO:
-		// Make the player move
+	protected void moveTo(Player thePlayer, int propId) {
+		playerLocs.put(thePlayer, propId);
 	}
 	
-	public void payTax() {
-		// TODO:
-		// Make the player pay stuff based on the property they land on
+	protected void payTax(Player thePlayer) {
+		if (playerLocs.get(thePlayer) == 4) {
+			// Pay $200, the 10% option is gone in new US edition
+			thePlayer.addMoney(-200);
+		}
+		else if (playerLocs.get(thePlayer) == 38) {
+			// new US edition sets luxury tax at $100 not $75
+			thePlayer.addMoney(-100);
+		}
+		else {
+			// Didn't need to pay taxes.
+			System.out.println("TAXED ENOUGH ALREADY");
+		}
 	}
 	
-	public void buyProperty(int propId) {
-		// TODO:
-		// Buy Properties
+	protected void buyProperty(Player thePlayer, int propId) {
+		if (canBuyProperty(thePlayer, propId)) {
+			OwnableProperty temp = (OwnableProperty) boardProperties[propId];
+			temp.setOwner(thePlayer);
+			thePlayer.addMoney(-(temp.getCost()));
+		}
+		else {
+			System.out.println("BUY PROPERTY ENOUGH ALREADY");
+		}
 	}
 	
-	public void transferProperty(int propId) {
-		// TODO:
-		// Transfer Properties
+	protected void transferProperty(Player oldOwner, int propId, Player newOwner) {
+		if (canTransferProperty(oldOwner, propId)) {
+			OwnableProperty temp = (OwnableProperty)boardProperties[propId];
+			temp.setOwner(newOwner);
+		}
+		else {
+			System.out.println("TRANSFER PROPERTY ENOUGH ALREADY");
+		}
 	}
 	
 	// Buys one house on the selected color group.
 	// Houses are placed on the property with the least number of houses on that color group.
-	public void buyHouse(Color propColor) {
-		// TODO:
-		// Buy House
+	protected void buyHouse(Player thePlayer, Color theColor) {
+		ArrayList<Integer> possibleToAdd = new ArrayList<Integer>();
+		ArrayList<Integer> ownedColorProps = ownedColorProperties(thePlayer, theColor);
+		if (ownedColorProps.size() > 0) {
+			for (Integer propId : ownedColorProps) {
+				if (((ColorProperty)boardProperties[propId]).getNumHouses() < 6) {
+					possibleToAdd.add(propId);
+				}
+			}
+		}
+		
+		
 	}
 	
-	public void mortgage(int propId) {
+	protected void mortgage(int propId) {
 		// TODO:
 		// Mortgage Houses
 	}
 	
-	public void deMortgage(int propId) {
+	protected void deMortgage(int propId) {
 		// TODO:
 		// De-Mortgage Houses
 	}
 	
-	public Card drawCard() {
+	protected Card drawCard() {
 		// TODO:
 		// Draw Card
 	}
 	
-	public void goToJail() {
+	protected void goToJail() {
 		// TODO:
 		// Send player to jail
 	}
 	
 	// Get out of jail by using a card
-	public void useOutJail() {
+	protected void useOutJail() {
 		// TODO:
 		// Send player out of jail
 		// Transfer card out of player possession
@@ -235,7 +286,7 @@ public class Board {
 	}
 	
 	// Get out of jail by paying money
-	public void payOutJail() {
+	protected void payOutJail() {
 		// TODO:
 		// Have player pay 50 to get out of jail
 	}
@@ -245,53 +296,160 @@ public class Board {
 		// Check if can move (IE in jail)
 	}
 	
-	public boolean canPayTax() {
-		// TODO:
-		// Check if on a tax property
+	public boolean canPayTax(Player thePlayer) {
+		int playerLoc = playerLocs.get(thePlayer);
+		// Player on Income         or Luxury tax
+		if (playerLoc == 4 || playerLoc == 38) {
+			return true;
+		}
+		return false;
 	}
 	
-	public boolean canBuyProperty(int propId) {
-		// TODO:
-		// Check if property is Ownable, and if it isn't owned.
+	public boolean canBuyProperty(Player thePlayer, int propId) {
+		if (boardProperties[propId].getPropType() != "Property") {
+			OwnableProperty theProp = (OwnableProperty) boardProperties[propId];
+			if (theProp.getOwner() == null && thePlayer.getMoney() > theProp.getCost()) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
-	public boolean canTransferProperty(int propId, Player newOwner) {
-		// TODO:
-		// Check if property is transferable (IE, is owned by the player)
+	public boolean canTransferProperty(Player oldOwner, int propId) {
+		if (boardProperties[propId].getPropType() != "Property") {
+			OwnableProperty theProp = (OwnableProperty) boardProperties[propId];
+			if (theProp.getOwner().equals(oldOwner)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
-	public boolean canBuyHouse(Color propColor) {
-		// TODO:
-		// Check if player can buy a house (IE, if has enough money && there are still houses && the Color Group still can has space)
+	public boolean canBuyHouse(Player thePlayer, Color theColor) {
+		ArrayList<Integer> ownedColorProps = ownedColorProperties(thePlayer, theColor);
+		if (ownedColorProps.size() > 0) {
+			for (Integer propId : ownedColorProps) {
+				if (((ColorProperty)boardProperties[propId]).getNumHouses() < 6) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
-	public boolean canSellHouse(Color propColor) {
-		// TODO:
-		// Check if player can sell a house (IE, if that Color Group has a house on a property owned by the player)
+	public boolean canSellHouse(Player thePlayer, int propId) {
+		if (boardProperties[propId].getPropType() == "ColorProperty") {
+			ColorProperty temp = (ColorProperty) boardProperties[propId];
+			if (temp.getOwner().equals(thePlayer) && temp.getNumHouses() > 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
-	public boolean canMortgage(int propId) {
-		// TODO:
-		// Check if player can mortgage a property (IE, is owned && has no houses/hotels on it)
+	public boolean canMortgage(Player thePlayer, int propId) {
+		if ((boardProperties[propId].getPropType() != "Property")) {
+			OwnableProperty temp = (OwnableProperty) boardProperties[propId];
+			if (!temp.isMortgaged && temp.getOwner().equals(thePlayer)) {
+				if (temp.getPropType() == "ColorProperty") {
+					ColorProperty tempColor = (ColorProperty) boardProperties[propId];
+					if (tempColor.getNumHouses() == 0) {
+						return true;
+					}
+				}
+				else {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
-	public boolean canDeMortgage(int propId) {
-		// TODO:
-		// Check if a player can De-Mortgage a property (IE, is owned && is mortgaged && can afford to pay (+10% interest))
+	public boolean canDeMortgage(Player thePlayer, int propId) {
+		if ((boardProperties[propId].getPropType() != "Property")) {
+			OwnableProperty temp = (OwnableProperty) boardProperties[propId];
+			if (temp.isMortgaged && temp.getOwner().equals(thePlayer)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
-	public boolean canDrawCard() {
-		// TODO:
-		// Check if player can draw a card (IE, is on a Chance or Community Chest property)
+	public boolean canDrawCard(Player thePlayer) {
+		int index = playerLocs.get(thePlayer);
+		if (index == 2 || index == 7 || index == 17 || index == 22 || index == 33 || index == 36) {
+			return true;
+		}
+		return false;
 	}
 	
-	public boolean canUseOutJail() {
-		// TODO:
-		// Check if player can use a card to get out of jail (IE, has a Get Out of Jail Free Card && is in jail)
+	public boolean canUseOutJail(Player thePlayer) {		
+		if (thePlayer.isInJail()) {
+			if (chance.getPlayerOwned() == thePlayer || communityChest.getPlayerOwned() == thePlayer) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
-	public boolean canPayOutJail() {
-		// TODO:
-		// Check if player can pay money to get out of jail (IE, can afford $50 && is in jail)
+	public boolean canPayOutJail(Player thePlayer) {
+		if (thePlayer.isInJail()) {
+			if (thePlayer.getMoney() >= 50) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isOwnable(int propId) {
+		if (boardProperties[propId].getPropType() == "Property") {
+			return false;
+		}
+		return true;
+	}
+	
+	// Returns the index of all properties of theColor owned by thePlayer
+	public ArrayList<Integer> ownedColorProperties(Player thePlayer, Color theColor) {
+		ArrayList<Integer> ownedColorProps = new ArrayList<Integer>();
+		
+		for (int i = 0; i < boardProperties.length; i++) {
+			if (boardProperties[i].getPropType() == "ColorProperty") {
+				ColorProperty colorProp = (ColorProperty) boardProperties[i];
+				if (colorProp.owner == thePlayer) {
+					ownedColorProps.add(i);
+				}
+			}
+		}
+		return ownedColorProps;
+	}
+	
+	// Gets the cost of buying a house based on theColor
+	public int houseCost(Color theColor) {
+		if (theColor == Color.MAGENTA) {
+			return 50;
+		}
+		else if (theColor == Color.CYAN) {
+			return 50;
+		}
+		else if (theColor == Color.PINK) {
+			return 100;
+		}
+		else if (theColor == Color.ORANGE) {
+			return 100;
+		}
+		else if (theColor == Color.RED) {
+			return 150;
+		}
+		else if (theColor == Color.YELLOW ) {
+			return 150;
+		}
+		else if (theColor == Color.GREEN) {
+			return 200;
+		}
+		else if (theColor == Color.BLUE) {
+			return 200;
+		}
+		System.out.println("HOUSE COST ENOUGH ALREADY");
+		return 0;
 	}
 }
