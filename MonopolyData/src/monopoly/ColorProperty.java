@@ -12,7 +12,7 @@ public class ColorProperty extends OwnableProperty {
 	
 	public ColorProperty(int cCost, Player cOwner, boolean cIsMortgaged, Color cPropColor, int cNumHouses, boolean cHasHotel, int[] cPayTable) {
 		super(cCost, cOwner, cIsMortgaged);
-		
+		propColor = cPropColor;
 		numHouses = cNumHouses;
 		hasHotel = cHasHotel;
 		payTable = cPayTable;
@@ -20,15 +20,19 @@ public class ColorProperty extends OwnableProperty {
 	
 	@Override
 	public int getRent() {
-		if (hasHotel) {
-			return payTable[5];
-		}
-		else {
-			// TODO:
-			// Something here about monopolies (unimproved lots color checker)
-			
+		if (owner != null) {
+			if (Board.hasMonopoly(owner, propColor) && numHouses == 0) {
+				return 2 * payTable[numHouses];
+			}
 			return payTable[numHouses];
 		}
+		return 0;
+	}
+	
+	@Override
+	public int getRent(int multiplier) {
+		System.out.println("COLOR PROPERTY MULTIPLIER ERROR");
+		return getRent();
 	}
 	
 	public Color getColor() {
@@ -41,6 +45,9 @@ public class ColorProperty extends OwnableProperty {
 	
 	public void addHouses(int change) {
 		numHouses += change;
+		if (numHouses == 5) {
+			hasHotel = true;
+		}
 	}
 	
 	public boolean hasHotel() {

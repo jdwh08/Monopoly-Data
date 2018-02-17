@@ -20,6 +20,10 @@ public class OwnableProperty extends Property {
 		return 0;
 	}
 	
+	public int getRent(int multiplier) {
+		return 0 * multiplier;
+	}
+	
 	public int getCost() {
 		return cost;
 	}
@@ -30,6 +34,10 @@ public class OwnableProperty extends Property {
 	
 	public boolean getIsMortgaged() {
 		return isMortgaged;
+	}
+	
+	public void switchMortgageStatus() {
+		isMortgaged = !isMortgaged;
 	}
 	
 	public Player getOwner() {

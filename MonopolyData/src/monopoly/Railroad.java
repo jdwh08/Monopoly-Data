@@ -10,10 +10,21 @@ public class Railroad extends OwnableProperty {
 	
 	@Override
 	public int getRent() {
-		// TODO:
-		// Find a way to check how many railroads a player has
-		
-		return 50;
+		if (owner != null) {
+			int numOwned = Board.numPropOwned(owner, "Railroad");
+			switch (numOwned) {
+			case 1:
+				return 50;
+			case 2:
+				return 100;
+			case 3:
+				return 150;
+			case 4: 
+				return 200;
+			}
+			System.out.println("RAILROAD RENT FAIL");
+		}
+		return 0;
 	}
 	
 	@Override

@@ -10,10 +10,24 @@ public class Utility extends OwnableProperty {
 	
 	@Override
 	public int getRent() {
-		// TODO:
-		// Check if player owns both utilities
-		
-		return Board.rollDice() * 4;
+		if (owner != null) {
+			if (Board.numPropOwned(owner, "Utility") == 2) {
+				return Board.rollDice() * 10;
+			}
+			else {
+				return Board.rollDice() * 4;
+			}
+		}
+		return 0;
+	}
+	
+	public int getRent(int multiplier) {
+		return Board.rollDice() * multiplier;
+	}
+	
+	// "Base" rent without multiple. To be used for the moveMoneyCard for utilities
+	public int baseRent() {
+		return Board.rollDice();
 	}
 	
 	@Override
