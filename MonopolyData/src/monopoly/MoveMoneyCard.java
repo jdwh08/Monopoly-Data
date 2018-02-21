@@ -1,3 +1,4 @@
+// Jonathan Wang
 package monopoly;
 
 // Move to nearest XX and pay XX times the normal rent

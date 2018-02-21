@@ -1,3 +1,4 @@
+// Jonathan Wang
 package monopoly;
 
 import java.awt.Color;
@@ -32,9 +33,8 @@ public class Board {
 		numPlayers = 2;
 		playerLocs = new HashMap<Player, Integer>();
 		pendingTrades = new ArrayList<TradeRequest>();
-		// TODO: Change back
-		playerLocs.put(currentPlayer, 7);
-		playerLocs.put(otherPlayer, 12);
+		playerLocs.put(currentPlayer, 0);
+		playerLocs.put(otherPlayer, 0);
 	}
 
 	private void initializeProperties() { // OKAY
@@ -188,9 +188,6 @@ public class Board {
 		ArrayList<Card> iChance = new ArrayList<Card>();
 		GetOutOfJailCard outOfJail = new GetOutOfJailCard();
 		iChance.add(outOfJail);
-		// TODO: Change back
-		
-		/*
 		MoveCard toGo = new MoveCard(1, 1);
 		iChance.add(toGo);
 		MoveCard toIllinois = new MoveCard(24, 2);
@@ -221,15 +218,12 @@ public class Board {
 		iChance.add(chairmanOfBoard);
 		MoneyCard buildingLoan = new MoneyCard(150, 15);
 		iChance.add(buildingLoan);
-		*/
 		chance = new CardPile(iChance);
 		
 		// CommunityChest
 		ArrayList<Card> iCC = new ArrayList<Card>();
 		iCC.add(outOfJail);
-		// TODO: Change back
-		
-		/*iCC.add(toGo);
+		iCC.add(toGo);
 		MoneyCard bankError = new MoneyCard(200, 2);
 		iCC.add(bankError);
 		MoneyCard doctorsFees = new MoneyCard(-50, 3);
@@ -255,7 +249,7 @@ public class Board {
 		MoneyCard secondBeautyPrize = new MoneyCard(10, 13);
 		iCC.add(secondBeautyPrize);
 		MoneyCard inherit = new MoneyCard(100,14);
-		iCC.add(inherit);*/
+		iCC.add(inherit);
 		communityChest = new CardPile(iCC);
 	}
 	
@@ -284,12 +278,10 @@ public class Board {
 			hasDoubles = true;
 		}
 		int moveDist = diceOne + diceTwo;
-		// TODO: Switch back
-		moveDist = 10;
 		
 		// Wrap around GO
 		if (moveDist + playerLocs.get(thePlayer) > 39) {
-			playerLocs.put(thePlayer, moveDist + playerLocs.get(thePlayer) - 40);
+			playerLocs.put(thePlayer, (moveDist + playerLocs.get(thePlayer)) - 40);
 			thePlayer.addMoney(200);
 			payRent(thePlayer);
 		}
@@ -455,6 +447,7 @@ public class Board {
 			}
 			else if (movement < 0) {
 				moveTo(thePlayer, playerLocs.get(thePlayer) + movement);
+				break;
 			}
 			else {
 				moveTo(thePlayer, movement);
@@ -547,10 +540,15 @@ public class Board {
 	// Get out of jail by using a card
 	protected void useOutJail(Player thePlayer) {
 		if (canUseOutJail(thePlayer)) {
-			if (chance.ownsGetOutOfJail.equals(thePlayer)) {
+			if (chance.ownsGetOutOfJail != null && chance.ownsGetOutOfJail.equals(thePlayer)) {
 				thePlayer.switchJailStatus();
 				thePlayer.resetTurnInJail();
 				chance.ownsGetOutOfJail = null;
+			}
+			else if (communityChest.ownsGetOutOfJail != null && communityChest.ownsGetOutOfJail.equals(thePlayer)) {
+				thePlayer.switchJailStatus();
+				thePlayer.resetTurnInJail();
+				communityChest.ownsGetOutOfJail = null;
 			}
 		}
 	}
@@ -687,7 +685,7 @@ public class Board {
 
 	public static boolean canUseOutJail(Player thePlayer) {
 		if (thePlayer.isInJail()) {
-			if (chance.getPlayerOwned() == thePlayer || communityChest.getPlayerOwned() == thePlayer) {
+			if ((chance.getPlayerOwned() != null && chance.getPlayerOwned().equals(thePlayer)) || (communityChest.getPlayerOwned() != null && communityChest.getPlayerOwned().equals(thePlayer))) {
 				return true;
 			}
 		}
@@ -718,14 +716,15 @@ public class Board {
 		}
 		return true;
 	}
-
-	public static ArrayList<Integer> ownedProperties(Player thePlayer, Color theColor) {
+	
+	// Returns the id of all properties owned by thePlayer
+	public static ArrayList<Integer> ownedProperties(Player thePlayer) {
 		ArrayList<Integer> ownedColorProps = new ArrayList<Integer>();
 
 		for (int i = 0; i < boardProperties.length; i++) {
-			if (boardProperties[i].getPropType() == "ColorProperty") {
-				ColorProperty colorProp = (ColorProperty) boardProperties[i];
-				if (colorProp.owner == thePlayer) {
+			if (boardProperties[i].getPropType() != "Property") {
+				OwnableProperty ownableProp = (OwnableProperty) boardProperties[i];
+				if (ownableProp.getOwner() == thePlayer) {
 					ownedColorProps.add(i);
 				}
 			}
@@ -733,7 +732,7 @@ public class Board {
 		return ownedColorProps;
 	}
 	
-	// Returns the index of all properties of theColor owned by thePlayer
+	// Returns the id of all properties of theColor owned by thePlayer
 	public static ArrayList<Integer> ownedColorProperties(Player thePlayer, Color theColor) {
 		ArrayList<Integer> ownedColorProps = new ArrayList<Integer>();
 
@@ -806,12 +805,6 @@ public class Board {
 		return 0;
 	}
 	
-	void switchCurrentPlayer() {
-		Player temp = currentPlayer;
-		currentPlayer = otherPlayer;
-		otherPlayer = temp;
-	}
-	
 	// Gets the number of properties of theType owned by thePlayer
 	public static int numPropOwned(Player thePlayer, String theType) {
 		int answer = 0;
@@ -833,5 +826,11 @@ public class Board {
 	
 	public static ArrayList<TradeRequest> getPendingTrades() {
 		return pendingTrades;
+	}
+	
+	void switchCurrentPlayer() {
+		Player temp = currentPlayer;
+		currentPlayer = otherPlayer;
+		otherPlayer = temp;
 	}
 }

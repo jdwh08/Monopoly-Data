@@ -1,4 +1,14 @@
+// Jonathan Wang
 package monopoly;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import players.Player;
 import players.SemiRandomPlayer;
@@ -6,17 +16,24 @@ import players.SemiRandomPlayer;
 public class MonopolyRunner {
 	static Player currentPlayer;
 	static Board monopolyBoard;
+	private static Path outputPath;
+	private static File output;
+	static List<String> writeLines;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		// Initialize
 		SemiRandomPlayer playerOne = new SemiRandomPlayer(1500, false);
 		currentPlayer = playerOne;
 		SemiRandomPlayer playerTwo = new SemiRandomPlayer(1500, false);
 		monopolyBoard = new Board(playerOne, playerTwo);
-
+		
+		output = new File("monopolyData");
+		outputPath = Paths.get(output.getPath());
+		writeLines = new ArrayList<String>();
+		
 		// Main game loop
 		while (playerOne.getMoney() > 0 && playerTwo.getMoney() > 0) {
-			currentPlayer = monopolyBoard.getCurrentPlayer();
+			currentPlayer = Board.getCurrentPlayer();
 
 			boolean hasDoubles = false;
 			int numDoubles = 0;
@@ -27,30 +44,31 @@ public class MonopolyRunner {
 					hasDoubles = monopolyBoard.move(currentPlayer);
 					// Just been sent to jail
 					if (currentPlayer.isInJail()) {
-						System.out.println("Player: " + currentPlayer + " Location: " + monopolyBoard.getPlayerLocs().get(currentPlayer) + " Action: " + -2 + " Money: " + currentPlayer.getMoney());
+						System.out.println("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Action: " + -2 + " Money: " + currentPlayer.getMoney());
+						writeLines.add("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Action: " + -2 + " Money: " + currentPlayer.getMoney());
 						break;
 					}
 					if (hasDoubles) {
 						numDoubles++;
 					}
 				}
-				int beforeActionLoc = monopolyBoard.getPlayerLocs().get(currentPlayer);
+				int beforeActionLoc = Board.getPlayerLocs().get(currentPlayer);
 				doAction();
 				// Just been sent to jail
 				if (currentPlayer.isInJail()) {
-					System.out.println("Player: " + currentPlayer + " Location: " + monopolyBoard.getPlayerLocs().get(currentPlayer) + " Action: " + -2 + " Money: " + currentPlayer.getMoney());
+					System.out.println("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Action: " + -2 + " Money: " + currentPlayer.getMoney());
+					writeLines.add("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Action: " + -2 + " Money: " + currentPlayer.getMoney());
 					break;
 				}
 
-				int afterActionLoc = monopolyBoard.getPlayerLocs().get(currentPlayer);
+				int afterActionLoc = Board.getPlayerLocs().get(currentPlayer);
 				// Check if action caused player to move
 				if (beforeActionLoc != afterActionLoc) {
 					// Allow the player to buy the property if unowned
 					doAction();
 				}
 
-				// Anytime
-				// TODO:
+				// TODO: Anytime player stuff
 
 			}
 			while (hasDoubles && numDoubles < 3);
@@ -60,6 +78,8 @@ public class MonopolyRunner {
 			}
 			monopolyBoard.switchCurrentPlayer();
 		}
+		
+		Files.write(outputPath, writeLines, Charset.forName("UTF-8"));
 	}
 
 	public static void doAction() {
@@ -88,6 +108,14 @@ public class MonopolyRunner {
 			monopolyBoard.rollOutJail(currentPlayer);
 			break;
 		}
-		System.out.println("Player: " + currentPlayer + " Location: " + monopolyBoard.getPlayerLocs().get(currentPlayer) + " Action: " + actionId + " Money: " + currentPlayer.getMoney());
+		System.out.println("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Action: " + actionId + " Money: " + currentPlayer.getMoney());
+		writeLines.add("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Action: " + actionId + " Money: " + currentPlayer.getMoney());
 	}
+	
+	// TODO: Anytime
+	
+	/*public static void doAnytime() {
+		ArrayList<Integer> playerOutput = currentPlayer.getAnytime();
+		int actionId = playerOutput.
+	}*/
 }

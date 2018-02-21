@@ -1,3 +1,4 @@
+// Jonathan Wang
 package monopoly;
 import java.util.ArrayList;
 
@@ -17,11 +18,13 @@ public class TradeRequest {
 	
 	boolean isAccepted;
 	
-	public TradeRequest(Player iSender, Player iReceiver, ArrayList<Integer> iSentProps, ArrayList<Integer> iReceivedProps, boolean iSentOutOfJail, boolean iReceivedOutOfJail) {
+	public TradeRequest(Player iSender, Player iReceiver, ArrayList<Integer> iSentProps, ArrayList<Integer> iReceivedProps, int iSentMoney, int iReceivedMoney, boolean iSentOutOfJail, boolean iReceivedOutOfJail) {
 		sender = iSender;
 		receiver = iReceiver;
 		sentProps = iSentProps;
 		receivedProps = iReceivedProps;
+		sentMoney = iSentMoney;
+		receivedMoney = iReceivedMoney;
 		sentOutOfJail = iSentOutOfJail;
 		receivedOutOfJail = iReceivedOutOfJail;
 	}

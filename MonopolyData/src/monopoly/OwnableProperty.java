@@ -1,10 +1,11 @@
+// Jonathan Wang
 package monopoly;
 
 import players.Player;
 
 public class OwnableProperty extends Property {
 	private int cost;
-	private int mortgageCost;
+	private int mortgageCost; // Amount of money given to player for mortgaging
 	Player owner;
 	boolean isMortgaged;
 	

@@ -1,3 +1,4 @@
+// Jonathan Wang
 package monopoly;
 
 public abstract class Card {
@@ -6,7 +7,6 @@ public abstract class Card {
 	
 	public Card(int iCardId) {
 		cardId = iCardId;
-		
 	}
 	
 	public int getCardId() {

@@ -1,3 +1,4 @@
+// Jonathan Wang
 package monopoly;
 
 public class GetOutOfJailCard extends Card {

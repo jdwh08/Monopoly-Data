@@ -1,3 +1,4 @@
+// Jonathan Wang
 package players;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public abstract class Player {
 	abstract void getPossibleActions();
 
 	public abstract int getAction();
+	public abstract ArrayList<Integer> getAnytime();
 
 	public int getMoney() {
 		return money;

@@ -1,3 +1,4 @@
+// Jonathan Wang
 package monopoly;
 
 public class MoneyPerNumCard extends Card {
