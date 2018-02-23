@@ -10,7 +10,6 @@ import players.Player;
 public class Board {
 
 	private static Property[] boardProperties;
-	Color[] propColors = { Color.MAGENTA, Color.CYAN, Color.PINK, Color.ORANGE, Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE };
 	private static CardPile chance;
 	private static CardPile communityChest;
 	static int numHousesLeft;
@@ -36,7 +35,11 @@ public class Board {
 		playerLocs.put(currentPlayer, 0);
 		playerLocs.put(otherPlayer, 0);
 	}
-
+	
+	/* Instantiates the properties in the board.
+	 * Precondition: Runner is started, Board is to be instantiated.
+	 * Postcondition: boardProperties is filled with the properties.
+	 */
 	private void initializeProperties() { // OKAY
 		boardProperties = new Property[40];
 
@@ -183,7 +186,11 @@ public class Board {
 		boardProperties[39] = boardwalk;
 	}
 	
-	private void initializeCards() { // OKAY
+	/* Instantiates the cards in communityChest and chance.
+	 * Precondition: Runner is started, Properties have been instantiated
+	 * Postcondition: communityChest and chance are filled with the cards.
+	 */
+	private void initializeCards() {
 		// Chance
 		ArrayList<Card> iChance = new ArrayList<Card>();
 		GetOutOfJailCard outOfJail = new GetOutOfJailCard();
@@ -253,22 +260,38 @@ public class Board {
 		communityChest = new CardPile(iCC);
 	}
 	
-	// Gets property by ID
+	/* Returns the Property specified by the id.
+	 * Precondition: The board is filled with properties.
+	 * @param id of the property to be found
+	 * @return the Property specified by the id.
+	 */
 	public Property getProperty(int id) {
 		return boardProperties[id];
 	}
 	
-	// Gets property thePlayer is on
+	/* Returns the Property thePlayer is on.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the Player to look up
+	 * @return the Property the player is on.
+	 */
 	public Property getProperty(Player thePlayer) {
 		int index = playerLocs.get(thePlayer);
 		return boardProperties[index];
 	}
 
+	/* Returns sum of rolling two dice.
+	 * @return the integer for the sum of the two dice.
+	 */
 	public static int rollDice() {
 		return (int) ((Math.random() * 5 + 1) + (Math.random() * 5 + 1));
 	}
 
-	// Moves player and pays rent if necessary. Returns whether rolled a double
+	/* Moves the player
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the Player to move
+	 * @return whether the two dice have the same number (whether the player has rolled doubles)
+	 * Postcondition: The player is moved by the sum of the dice.
+	 */
 	protected boolean move(Player thePlayer) {
 		boolean hasDoubles = false;
 		int diceOne = (int) ((Math.random() * 5 + 1));
@@ -299,7 +322,12 @@ public class Board {
 		
 		return hasDoubles;
 	}
-
+	
+	/* Moves the player to the location specified by the propID (the index of boardProperties)
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the Player to move, the index of the boardProperties to move the player to
+	 * Postcondition: The player is moved to the location specified.
+	 */
 	protected void moveTo(Player thePlayer, int propId) {
 		// Check if passes GO and thus collect $200
 		if (playerLocs.get(thePlayer) > propId) {
@@ -311,6 +339,11 @@ public class Board {
 		
 	}
 	
+	/* Moves the player to the location specified by the propId and then have the player pay the rent times the multiplier
+	 * Precondition: The board is filled with properties, the players are instantiated, the player drew a MoveMoneyCard
+	 * @param the Player to move, the property to move to, the multiplier for the rent
+	 * Postcondition: The player is moved by the sum of the dice and has money reduced by the rent times the multiplier
+	 */
 	protected void moveTo(Player thePlayer, int propId, int multiplier) {
 		// Check if passes GO and thus collect $200
 		if (playerLocs.get(thePlayer) > propId) {
@@ -321,9 +354,13 @@ public class Board {
 		payRent(thePlayer, multiplier);
 	}
 
+	/* Makes the player pay Income or Property Tax
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the Player to pay tax with
+	 * Postcondition: The player has their money decreased by the amount for the tax if they are on a tax square.
+	 */
 	protected void payTax(Player thePlayer) {
 		if (playerLocs.get(thePlayer) == 4) {
-			// Pay $200, the 10% option is gone in new US edition
 			thePlayer.addMoney(-200);
 		}
 		else if (playerLocs.get(thePlayer) == 38) {
@@ -332,10 +369,14 @@ public class Board {
 		}
 		else {
 			// Didn't need to pay taxes.
-			System.out.println("TAXED ENOUGH ALREADY");
 		}
 	}
 
+	/* Makes thePlayer pay for the property.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the Player wanting to buy the property, the index of the property to buy
+	 * Postcondition: The player owns the property and has their money reduced by the property cost if they can buy the property.
+	 */
 	protected void buyProperty(Player thePlayer, int propId) {
 		if (canBuyProperty(thePlayer, propId)) {
 			OwnableProperty temp = (OwnableProperty) boardProperties[propId];
@@ -343,22 +384,30 @@ public class Board {
 			thePlayer.addMoney(-(temp.getCost()));
 		}
 		else {
-			System.out.println("BUY PROPERTY ENOUGH ALREADY");
+
 		}
 	}
 
+	/* Transfers ownership of the property.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the current owner of the property, the index of the property, the new owner of the property.
+	 * Postcondition: The property specified changes ownership to the new owner specified if it can be transfered over.
+	 */
 	protected void transferProperty(Player oldOwner, int propId, Player newOwner) {
 		if (canTransferProperty(oldOwner, propId)) {
 			OwnableProperty temp = (OwnableProperty) boardProperties[propId];
 			temp.setOwner(newOwner);
 		}
 		else {
-			System.out.println("TRANSFER PROPERTY ENOUGH ALREADY");
+			
 		}
 	}
 
-	// Buys one house on the selected color group.
-	// Houses are placed on the property with the least number of houses on that color group.
+	/* Buys a house on one of the properties of the color specified.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the Player wanting to buy a house, the color of the property group they want to build a house on.
+	 * Postcondition: If legal, the property with the least number of houses on it with that color gets an additional house. The player pays the house cost.
+	 */
 	protected void buyHouse(Player thePlayer, Color theColor) {
 		ArrayList<Integer> ownedColorProps = ownedColorProperties(thePlayer, theColor);
 		ArrayList<Integer> possibleToAdd = new ArrayList<Integer>();
@@ -389,6 +438,7 @@ public class Board {
 				}
 
 				((ColorProperty) boardProperties[minHouseId]).addHouses(1);
+				thePlayer.addMoney(-houseCost(((ColorProperty) boardProperties[minHouseId]).getColor()));
 				if (((ColorProperty) boardProperties[minHouseId]).getNumHouses() == 5) {
 					numHotelsLeft--;
 				}
@@ -398,25 +448,86 @@ public class Board {
 			}
 		}
 	}
+	
+	/* Sells a house from that color group.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the Player who wants to sell houses, the color of the property they want to sell houses from.
+	 * Postcondition: If legal, property with most number of houses with theColor specified loses one house. The player gains half the house cost.
+	 */
+	protected void sellHouse(Player thePlayer, Color theColor) {
+		ArrayList<Integer> ownedColors = ownedColorProperties(thePlayer, theColor);
+		ArrayList<Integer> possibleToRemove = new ArrayList<Integer>();
+		
+		// Does thePlayer own properties in that color with houses
+		if (canSellHouse(thePlayer, theColor)) {
+			for (Integer propId : ownedColors) {
+				if (((ColorProperty) boardProperties[propId]).getNumHouses() > 0) {
+					possibleToRemove.add(propId);
+				}
+			}
+			
+			// Properties which are owned by thePlayer and have houses
+			if (possibleToRemove.size() > 0) {
+				// Find prop with most amount of houses
+				int maxHouseId = possibleToRemove.get(0);
+				int maxHouseNum = ((ColorProperty) (boardProperties[maxHouseId])).getNumHouses();
+				for (Integer propId : possibleToRemove) {
+					if (((ColorProperty) (boardProperties[propId])).getNumHouses() > maxHouseNum) {
+						maxHouseNum = ((ColorProperty) boardProperties[propId]).getNumHouses();
+						maxHouseId = propId;
+					}
+				}
 
+				((ColorProperty) boardProperties[maxHouseId]).addHouses(-1);
+				thePlayer.addMoney(houseCost(((ColorProperty) boardProperties[maxHouseId]).getColor()) / 2);
+				if (((ColorProperty) boardProperties[maxHouseId]).getNumHouses() == 5) {
+					numHotelsLeft++;
+				}
+				else {
+					numHousesLeft++;
+				}
+			}
+		}
+	}
+	
+	/* Mortgages a property
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the Player who wants to mortgage, the index of the property thePlayer wants to mortgage.
+	 * Postcondition: If legal, property specified becomes mortgaged.
+	 */
 	protected void mortgage(Player thePlayer, int propId) {
 		if (canMortgage(thePlayer, propId)) {
 			((OwnableProperty) boardProperties[propId]).switchMortgageStatus();
+			thePlayer.addMoney(((OwnableProperty) boardProperties[propId]).getMortgageCost());
+			
 		}
 		else {
 			System.out.println("MORTGAGED ENOUGH ALREADY");
 		}
 	}
-
+	
+	/* Removes mortgage from a property.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the Player who wants to de-mortgage, the index of the property thePlayer wants to de-mortgage.
+	 * Postcondition: If legal, property specified no longer is mortgaged. thePlayer pays back the mortgaged and 10% of the mortgage as interest.
+	 */
 	protected void deMortgage(Player thePlayer, int propId) {
 		if (canDeMortgage(thePlayer, propId)) {
 			((OwnableProperty) boardProperties[propId]).switchMortgageStatus();
+			thePlayer.addMoney((int) (- 1.10 * ((OwnableProperty) boardProperties[propId]).getMortgageCost()));
 		}
 		else {
 			System.out.println("DEMORTGAGED ENOUGH ALREADY");
 		}
 	}
-
+	
+	/* Draws a card from chance or communityChest.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the Player who is trying to draw a card
+	 * Postcondition: If legal, card is drawn (removed from available cards in the cardPile).
+	 * 		If card was a GetOutOfJail card, thePlayer becomes the owner.
+	 * 		Otherwise, the card takes effect and is then moved to unavailable in the cardPile.
+	 */
 	protected void drawCard(Player thePlayer) {
 		if (canDrawCard(thePlayer)) {
 			int playerLocId = playerLocs.get(thePlayer);
@@ -434,17 +545,27 @@ public class Board {
 		}
 	}
 	
-	// Does the effects for the cards
+	/* Uses a card / makes it take effect.
+	 * Precondition: The board is filled with properties, the players are instantiated, a player drew a card
+	 * @param the Player who drew the card, the Card drawn.
+	 * Postcondition: The card's action takes effect.
+	 * 		If MoveCard, player moves to the location specified. If not going to jail, player might gain $200 by passing Go (index 0).
+	 * 		If MoneyCard, player's money changes by the amount specified.
+	 * 		If MoneyPerNumCard, player's money changes by the amount specified times the number of things (ex. number of houses, number of players).
+	 * 		If MoveMoneyCard, player moves to nearest property of that type. If needs to pay rent, pays rent times the multiple.
+	 */
 	protected void useCard(Player thePlayer, Card theCard) {
 		String cardType = theCard.getCardType();
 		switch (cardType) {
 		case "MoveCard":
 			int movement = ((MoveCard) theCard).getMoveId();
 			
+			// Checks for the "Go to Jail" card.
 			if ((movement == 10)) {
 				goToJail(thePlayer);
 				break;
 			}
+			// Checks for the "Move back three spaces" card.
 			else if (movement < 0) {
 				moveTo(thePlayer, playerLocs.get(thePlayer) + movement);
 				break;
@@ -461,10 +582,12 @@ public class Board {
 		case "MoneyPerNumCard":
 			MoneyPerNumCard temp = (MoneyPerNumCard) theCard;
 			if (temp.rateTwo == 0) {
+				// Cards with money based on number of players. Ex. Chairman of the Board - pay each player $50.
 				thePlayer.addMoney(temp.rateOne * (numPlayers - 1));
 				break;
 			}
 			else {
+				// Cards with money based on number of houses and hotels. Ex. Street repairs - pay $40 per house and $115 per hotel.
 				int numHouses = 0;
 				int numHotels = 0;
 				
@@ -488,7 +611,7 @@ public class Board {
 		case "MoveMoneyCard":
 			MoveMoneyCard tempMMC = (MoveMoneyCard) theCard;
 			int nearestProp = playerLocs.get(thePlayer);
-			// Find the nearest property
+			// Find the nearest property of the type specified.
 			for (int i = nearestProp; i < boardProperties.length; i++) {
 				if (boardProperties[i].getPropType().equals(tempMMC.getPropType())) {
 					nearestProp = i;
@@ -503,22 +626,34 @@ public class Board {
 					}
 				}
 			}
-			moveTo(thePlayer, nearestProp);
+			moveTo(thePlayer, nearestProp, tempMMC.getRentMultiplier());
 		}
 	}
 	
+	/* Pays rent.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the Player who might need to pay rent.
+	 * Postcondition: If legal, thePlayer gives rent amount to the owner of the property.
+	 */
 	private void payRent(Player thePlayer) {
 		int playerLoc = playerLocs.get(thePlayer);
 		if (boardProperties[playerLoc].getPropType() != "Property") {
 			OwnableProperty temp = (OwnableProperty) boardProperties[playerLoc];
 			if (temp.getOwner() != thePlayer && temp.getOwner() != null) {
+				// Property which is not owned by thePlayer.
 				int rent = temp.getRent();
 				thePlayer.addMoney(-rent);
-				temp.owner.addMoney(rent);
+				temp.getOwner().addMoney(rent);
 			}
 		}
 	}
 	
+	/* Pays rent multiplied by the multiplier.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the Player who might need to pay rent, the multiplier.
+	 * Postcondition: If legal, thePlayer gives rent amount to the owner of the property times the multiplier.
+	 * 		If utility, rent is sum of two dice times 10.
+	 */
 	private void payRent(Player thePlayer, int multiplier) {
 		int playerLoc = playerLocs.get(thePlayer);
 		if (boardProperties[playerLoc].getPropType() != "Property") {
@@ -531,13 +666,21 @@ public class Board {
 		}
 	}
 	
-	// Sends the player to jail
+	/* Sends player directly to jail.
+	 * Precondition: The board is filled with properties, the players are instantiated. Player either rolls 3 doubles, landed on GoToJail, or drew GoToJail.
+	 * @param the Player going to Jail.
+	 * Postcondition: Sends the player to jail and switches the player's isInJail to true.
+	 */
 	protected void goToJail(Player thePlayer) {
 		playerLocs.put(thePlayer, 10);
 		thePlayer.switchJailStatus();
 	}
 
-	// Get out of jail by using a card
+	/* Get out of jail by using the GetOutOfJailCard.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the Player who wants to use the card to get out of jail.
+	 * Postcondition: If legal, thePlayer exits jail. thePlayer's turns in jail becomes 0. thePlayer no longer owns one of the GetOutOfJailFree cards.
+	 */
 	protected void useOutJail(Player thePlayer) {
 		if (canUseOutJail(thePlayer)) {
 			if (chance.ownsGetOutOfJail != null && chance.ownsGetOutOfJail.equals(thePlayer)) {
@@ -553,7 +696,11 @@ public class Board {
 		}
 	}
 
-	// Get out of jail by paying money
+	/* Get out of jail by paying $50.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the Player who wants to get out of jail.
+	 * Postcondition: If legal, thePlayer exits jail. thePlayer's money decreases by 50.
+	 */
 	protected void payOutJail(Player thePlayer) {
 		if (canPayOutJail(thePlayer)) {
 			thePlayer.addMoney(-50);
@@ -562,6 +709,13 @@ public class Board {
 		}
 	}
 	
+	/* Get out of jail by rolling for doubles.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the Player who wants to get out of jail.
+	 * Postcondition: If legal, thePlayer rolls two dice.
+	 * 		If rolls doubles, then the player's isInJail gets set to false. thePlayer's number of turns in jail is set to 0.
+	 * 		If not doubles, thePlayer's turnInJail increments by 1.
+	 */
 	protected void rollOutJail(Player thePlayer) {
 		if (canRollOutJail(thePlayer)) {
 			int diceOne = (int) ((Math.random() * 5 + 1));
@@ -576,16 +730,31 @@ public class Board {
 			}
 		}
 	}
-	
+
+	/* Makes trade request.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the trade request to be made
+	 * Postcondition: the trade request gets added to pendingTrades.
+	 */
+	// Future extension.
 	protected void makeTradeRequest(TradeRequest tr) {
 		pendingTrades.add(tr);
 	}
 
+	/* Checks if player can move.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check.
+	 * @return boolean representing if the player can move (ie not in jail)
+	 */
 	public boolean canMove(Player thePlayer) {
 		return !thePlayer.isInJail();
 	}
 
-	// Pay luxury or income tax
+	/* Checks if player can pay tax.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check.
+	 * @return boolean representing if the player can pay tax (ie on the Income Tax or Luxury Tax squares)
+	 */
 	public static boolean canPayTax(Player thePlayer) {
 		int playerLoc = playerLocs.get(thePlayer);
 		// Player on Income         or Luxury tax
@@ -595,6 +764,11 @@ public class Board {
 		return false;
 	}
 
+	/* Checks if player can buy the property specified.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check, the index of the property planned.
+	 * @return boolean representing if the player can buy the property (no owner, has enough money)
+	 */
 	public static boolean canBuyProperty(Player thePlayer, int propId) {
 		if (boardProperties[propId].getPropType() != "Property") {
 			OwnableProperty theProp = (OwnableProperty) boardProperties[propId];
@@ -605,20 +779,30 @@ public class Board {
 		return false;
 	}
 
+	/* Checks if player can transfer the property specified.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check, the index of the property to transfer.
+	 * @return boolean representing if the player can transfer the property specified (ie owned by thePlayer specified)
+	 */
 	public static boolean canTransferProperty(Player oldOwner, int propId) {
 		if (boardProperties[propId].getPropType() != "Property") {
 			OwnableProperty theProp = (OwnableProperty) boardProperties[propId];
-			if (theProp.getOwner().equals(oldOwner)) {
+			if (theProp.getOwner() != null && theProp.getOwner().equals(oldOwner)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
+	/* Checks if player can buy a house on properties of that color.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check, color of property to build a house on.
+	 * @return boolean representing if the player can buy a house (ie owns all properties of that color without mortgages, houses / hotels left, has enough money to buy a house)
+	 */
 	public static boolean canBuyHouse(Player thePlayer, Color theColor) {
 		ArrayList<Integer> ownedColorProps = ownedColorProperties(thePlayer, theColor);
 		// Does thePlayer own properties in that color
-		if (ownedColorProps.size() > 0) {
+		if (ownedColorProps.size() > 0 && thePlayer.getMoney() > houseCost(theColor)) {
 			// Does thePlayer have a monopoly on that color
 			if (hasMonopolyNoMortgage(thePlayer, theColor)) {
 				for (Integer propId : ownedColorProps) {
@@ -637,20 +821,34 @@ public class Board {
 		return false;
 	}
 
-	public static boolean canSellHouse(Player thePlayer, int propId) {
-		if (boardProperties[propId].getPropType() == "ColorProperty") {
-			ColorProperty temp = (ColorProperty) boardProperties[propId];
-			if (temp.getOwner().equals(thePlayer) && temp.getNumHouses() > 0) {
-				return true;
+	/* Checks if player can sell a house.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check, theColor to sell a house from
+	 * @return boolean representing if the player can sell the house (ie owns a house on a property of that color)
+	 */
+	public static boolean canSellHouse(Player thePlayer, Color theColor) {
+		ArrayList<Integer> ownedColors = ownedColorProperties(thePlayer, theColor);
+		
+		for (int i = 0; i < ownedColors.size(); i++) {
+			if (boardProperties[i].getPropType() == "ColorProperty") {
+				ColorProperty temp = (ColorProperty) boardProperties[i];
+				if (temp.getOwner() != null && temp.getOwner().equals(thePlayer) && temp.getNumHouses() > 0) {
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 
+	/* Checks if player can mortgage a property.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check, the index of the property to mortgage.
+	 * @return boolean representing if the player can move (ie owns the property, is a ColorProperty, has no houses / hotels)
+	 */
 	public static boolean canMortgage(Player thePlayer, int propId) {
 		if ((boardProperties[propId].getPropType() != "Property")) {
 			OwnableProperty temp = (OwnableProperty) boardProperties[propId];
-			if (!temp.isMortgaged && temp.getOwner().equals(thePlayer)) {
+			if (!temp.isMortgaged && temp.getOwner() != null && temp.getOwner().equals(thePlayer)) {
 				if (temp.getPropType() == "ColorProperty") {
 					ColorProperty tempColor = (ColorProperty) boardProperties[propId];
 					if (tempColor.getNumHouses() == 0) {
@@ -665,16 +863,26 @@ public class Board {
 		return false;
 	}
 
+	/* Checks if player can remove the mortgage from a property.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check, the property to remove the mortgage from.
+	 * @return boolean representing if the player can de-mortgage the property (ie owns the property and is mortgaged)
+	 */
 	public static boolean canDeMortgage(Player thePlayer, int propId) {
 		if ((boardProperties[propId].getPropType() != "Property")) {
 			OwnableProperty temp = (OwnableProperty) boardProperties[propId];
-			if (temp.isMortgaged && temp.getOwner().equals(thePlayer)) {
+			if (temp.getIsMortgaged() && temp.getOwner().equals(thePlayer)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
+	/* Checks if player can draw a card.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check.
+	 * @return boolean representing if the player can draw a card (ie is on a Chance or Community Chest square)
+	 */
 	public static boolean canDrawCard(Player thePlayer) {
 		int index = playerLocs.get(thePlayer);
 		if (index == 2 || index == 7 || index == 17 || index == 22 || index == 33 || index == 36) {
@@ -683,6 +891,11 @@ public class Board {
 		return false;
 	}
 
+	/* Checks if player can use a GetOutOfJailCard to get out of jail.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check.
+	 * @return boolean representing if the player can use the card (ie in jail, owns a GetOutOfJailCard)
+	 */
 	public static boolean canUseOutJail(Player thePlayer) {
 		if (thePlayer.isInJail()) {
 			if ((chance.getPlayerOwned() != null && chance.getPlayerOwned().equals(thePlayer)) || (communityChest.getPlayerOwned() != null && communityChest.getPlayerOwned().equals(thePlayer))) {
@@ -692,6 +905,11 @@ public class Board {
 		return false;
 	}
 
+	/* Checks if player can pay money to get out of jail.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check.
+	 * @return boolean representing if the player can pay (ie in jail)
+	 */
 	public static boolean canPayOutJail(Player thePlayer) {
 		if (thePlayer.isInJail()) {
 			return true;
@@ -699,17 +917,33 @@ public class Board {
 		return false;
 	}
 	
+	/* Checks if player can roll dice to get out of jail.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check.
+	 * @return boolean representing if the player can roll dice to get out of jail (ie in jail & thrown dice less than 3 times)
+	 */
 	public static boolean canRollOutJail(Player thePlayer) {
-		if (thePlayer.isInJail() && thePlayer.getTurnsInJail() <= 3) {
+		if (thePlayer.isInJail() && thePlayer.getTurnsInJail() < 3) {
 			return true;
 		}
 		return false;
 	}
 
+	/* Checks if player can make trade requests.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check.
+	 * @return boolean representing if the player can trade (ie always)
+	 */
+	// For future extension
 	public static boolean canMakeTradeRequest(Player thePlayer) {
 		return true;
 	}
 
+	/* Checks if property can be owned
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the index of the property to check
+	 * @return boolean representing if the property can be owned (ie subclass of Property)
+	 */
 	public boolean isOwnable(int propId) {
 		if (boardProperties[propId].getPropType() == "Property") {
 			return false;
@@ -717,7 +951,11 @@ public class Board {
 		return true;
 	}
 	
-	// Returns the id of all properties owned by thePlayer
+	/* Returns the id of all properties owned by thePlayer
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check.
+	 * @return ArrayList<Integer> representing all the indexes of the properties owned by thePlayer.
+	 */
 	public static ArrayList<Integer> ownedProperties(Player thePlayer) {
 		ArrayList<Integer> ownedColorProps = new ArrayList<Integer>();
 
@@ -732,7 +970,11 @@ public class Board {
 		return ownedColorProps;
 	}
 	
-	// Returns the id of all properties of theColor owned by thePlayer
+	/* Returns the id of all properties of theColor owned by thePlayer
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check.
+	 * @return ArrayList<Integer> representing all the indexes of the properties of theColor owned by thePlayer.
+	 */
 	public static ArrayList<Integer> ownedColorProperties(Player thePlayer, Color theColor) {
 		ArrayList<Integer> ownedColorProps = new ArrayList<Integer>();
 
@@ -747,7 +989,11 @@ public class Board {
 		return ownedColorProps;
 	}
 
-	// Returns boolean for if thePlayer has a monopoly over theColor
+	/* Returns boolean for if thePlayer has a monopoly over theColor
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check, theColor of the property to check.
+	 * @return boolean representing whether thePlayer owns all properties of theColor.
+	 */
 	public static boolean hasMonopoly(Player thePlayer, Color theColor) {
 		ArrayList<Integer> ownedColorProps = ownedColorProperties(thePlayer, theColor);
 		// These colors have only 2 properties
@@ -763,7 +1009,11 @@ public class Board {
 		return false;
 	}
 
-	// Returns boolean for if thePlayer has a monopoly over theColor without mortgages
+	/* Returns boolean for if thePlayer has a monopoly over theColor without mortgages
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check, theColor of the properties to check.
+	 * @return boolean representing whether thePlayer owns all properties of theColor and none of the properties are mortgaged.
+	 */
 	public static boolean hasMonopolyNoMortgage(Player thePlayer, Color theColor) {
 		ArrayList<Integer> ownedColorProps = ownedColorProperties(thePlayer, theColor);
 		// Check for mortages
@@ -775,8 +1025,12 @@ public class Board {
 		return (hasMonopoly(thePlayer, theColor));
 	}
 
-	// Gets the cost of buying a house based on theColor
-	public int houseCost(Color theColor) {
+	/* Gets the cost of buying a house based on theColor
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param theColor of the property which is having a house built on it.
+	 * @return int representing the cost of buying one house on that color.
+	 */
+	public static int houseCost(Color theColor) {
 		if (theColor == Color.MAGENTA) {
 			return 50;
 		}
@@ -801,11 +1055,14 @@ public class Board {
 		else if (theColor == Color.BLUE) {
 			return 200;
 		}
-		System.out.println("HOUSE COST ENOUGH ALREADY");
 		return 0;
 	}
 	
-	// Gets the number of properties of theType owned by thePlayer
+	/* Gets the number of properties of theType owned by thePlayer
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param thePlayer to check, the type of the property written out as a string (ex. "Utility").
+	 * @return int representing the number of properties of theType owned by thePlayer.
+	 */
 	public static int numPropOwned(Player thePlayer, String theType) {
 		int answer = 0;
 		for (Property prop : boardProperties) {
@@ -816,18 +1073,26 @@ public class Board {
 		return answer;
 	}
 	
+	// Gets the player currently doing stuff.
 	public static Player getCurrentPlayer() {
 		return currentPlayer;
 	}
 	
+	// Gets a HashMap relating the players to the index of the boardProperty they are on.
 	public static HashMap<Player, Integer> getPlayerLocs() {
 		return playerLocs;
 	}
 	
+	// Gets an ArrayList of the current trade requests.
+	// For future extension.
 	public static ArrayList<TradeRequest> getPendingTrades() {
 		return pendingTrades;
 	}
 	
+	/* Switches which player is currently making moves.
+	 * Precondition: The board is filled with properties, the players are instantiated, the currentPlayer is finished making their moves.
+	 * Postcondition: the currentPlayer switches with the otherPlayer.
+	 */
 	void switchCurrentPlayer() {
 		Player temp = currentPlayer;
 		currentPlayer = otherPlayer;

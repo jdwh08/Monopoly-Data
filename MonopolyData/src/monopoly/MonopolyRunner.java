@@ -1,6 +1,7 @@
 // Jonathan Wang
 package monopoly;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -19,6 +20,7 @@ public class MonopolyRunner {
 	private static Path outputPath;
 	private static File output;
 	static List<String> writeLines;
+	static Color[] propColors = { Color.MAGENTA, Color.CYAN, Color.PINK, Color.ORANGE, Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE };
 
 	public static void main(String[] args) throws IOException {
 		// Initialize
@@ -67,9 +69,8 @@ public class MonopolyRunner {
 					// Allow the player to buy the property if unowned
 					doAction();
 				}
-
 				// TODO: Anytime player stuff
-
+				doAnytime();
 			}
 			while (hasDoubles && numDoubles < 3);
 
@@ -85,8 +86,6 @@ public class MonopolyRunner {
 	public static void doAction() {
 		// Action
 		int actionId = currentPlayer.getAction();
-		// TODO:
-		// Check to see if action is legal
 
 		switch (actionId) {
 		case 0:
@@ -112,10 +111,30 @@ public class MonopolyRunner {
 		writeLines.add("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Action: " + actionId + " Money: " + currentPlayer.getMoney());
 	}
 	
-	// TODO: Anytime
-	
-	/*public static void doAnytime() {
+	public static void doAnytime() {
 		ArrayList<Integer> playerOutput = currentPlayer.getAnytime();
-		int actionId = playerOutput.
-	}*/
+		if (!playerOutput.isEmpty()) {
+			int anytimeId = playerOutput.get(0);
+			
+			switch (anytimeId) {
+			case 0:
+				// This shouldn't happen because I'm not doing trades.
+				break;
+			case 1:
+				monopolyBoard.buyHouse(currentPlayer, propColors[playerOutput.get(1)]);
+				break;
+			case 2:
+				monopolyBoard.sellHouse(currentPlayer, propColors[playerOutput.get(1)]);
+				break;
+			case 3:
+				monopolyBoard.mortgage(currentPlayer, playerOutput.get(1));
+				break;
+			case 4:
+				monopolyBoard.deMortgage(currentPlayer, playerOutput.get(1));
+				break;
+			}
+			System.out.println("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Anytime: " + anytimeId + " Target: " + playerOutput.get(1) + " Money: " + currentPlayer.getMoney());
+			writeLines.add("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Anytime: " + anytimeId + " Target: " + playerOutput.get(1) + " Money: " + currentPlayer.getMoney());
+		}
+	}
 }

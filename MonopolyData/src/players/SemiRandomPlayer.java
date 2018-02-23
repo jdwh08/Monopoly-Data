@@ -20,35 +20,46 @@ public class SemiRandomPlayer extends Player {
 
 	@Override
 	void getPossibleActions() {
-		// Action 1: pay tax
+		// Action 0: pay tax
 		possibleActions.add(Board.canPayTax(this));
-		// Action 2: buy property
+		// Action 1: buy property
 		possibleActions.add(Board.canBuyProperty(this, Board.getPlayerLocs().get(this)));
-		// Action 3: draw card
+		// Action 2: draw card
 		possibleActions.add(Board.canDrawCard(this));
-		// Action 4: pay $50 to exit jail
+		// Action 3: pay $50 to exit jail
 		possibleActions.add(Board.canPayOutJail(this));
-		// Action 5: use a get out of jail free card to exit jail
+		// Action 4: use a get out of jail free card to exit jail
 		possibleActions.add(Board.canUseOutJail(this));
-		// Action 6: roll dice to try and get out of jail
+		// Action 5: roll dice to try and get out of jail
 		possibleActions.add(Board.canRollOutJail(this));
 	}
 
 	// Mortgaging & DeMortgaging, buying & selling houses which do not depend on player position
 	void getPossibleAnytimes() {
-		int randInt = (int) (Math.random() * 40);
-		possibleAnytimes.add(Board.canTransferProperty(this, randInt));
-		anytimeVals.add(randInt);
-		randInt = (int) (Math.random() * 8);
-		possibleAnytimes.add(Board.canBuyHouse(this, propColors[randInt]));
-		anytimeVals.add(randInt);
-		randInt = (int) (Math.random() * 40);
-		possibleAnytimes.add(Board.canMortgage(this, randInt));
-		anytimeVals.add(randInt);
-		randInt = (int) (Math.random() * 40);
-		possibleAnytimes.add(Board.canDeMortgage(this, randInt));
-		anytimeVals.add(randInt);
-		//possibleAnytimes.put(Board.canMakeTradeRequest(this));
+		ArrayList<Integer> getProps = Board.ownedProperties(this);
+		if (getProps.size() > 0) {
+			// Anytime 0: transfer property
+			int randInt = getProps.get((int) (Math.random() * getProps.size()));
+			possibleAnytimes.add(Board.canTransferProperty(this, randInt));
+			anytimeVals.add(randInt);
+			// Anytime 1: buy house
+			randInt = (int) (Math.random() * 8);
+			possibleAnytimes.add(Board.canBuyHouse(this, propColors[randInt]));
+			anytimeVals.add(randInt);
+			// Anytime 2: sell house
+			randInt = (int) (Math.random() * 8);
+			possibleAnytimes.add(Board.canSellHouse(this, propColors[randInt]));
+			anytimeVals.add(randInt);
+			// Anytime 3: mortgage property
+			randInt = getProps.get((int) (Math.random() * getProps.size()));
+			possibleAnytimes.add(Board.canMortgage(this, randInt));
+			anytimeVals.add(randInt);
+			// Anytime 4: demortgage property
+			randInt = getProps.get((int) (Math.random() * getProps.size()));
+			possibleAnytimes.add(Board.canDeMortgage(this, randInt));
+			anytimeVals.add(randInt);
+			//possibleAnytimes.put(Board.canMakeTradeRequest(this));
+		}
 	}
 
 	@Override
@@ -93,7 +104,8 @@ public class SemiRandomPlayer extends Player {
 		getPossibleAnytimes();
 		
 		ArrayList<Integer> anytimeOptions = new ArrayList<Integer>(); // possibleActions which can also be done
-		for (int i = 0; i < possibleActions.size(); i++) {
+		// 1 because I'm skipping player trades
+		for (int i = 1; i < possibleAnytimes.size(); i++) {
 			if (possibleAnytimes.get(i)) {
 				anytimeOptions.add(i);
 			}
@@ -101,7 +113,7 @@ public class SemiRandomPlayer extends Player {
 		
 		if (anytimeOptions.size() > 0) {
 			int randInt = (int)(Math.random() * anytimeOptions.size());
-			// Do a possible action
+			// Do a possible anytime
 			if (possibleAnytimes.get(anytimeOptions.get(randInt))) {
 				ArrayList<Integer> answer = new ArrayList<Integer>();
 				answer.add(anytimeOptions.get(randInt));
