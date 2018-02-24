@@ -5,7 +5,6 @@ public class MoneyCard extends Card {
 	private int money;
 	
 	public MoneyCard(int iMoney, int iCardId) {
-		super(iCardId);
 		setMoney(iMoney);
 		setCardType();
 	}

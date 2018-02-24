@@ -7,7 +7,6 @@ public class MoveMoneyCard extends Card {
 	int rentMultiplier;
 	
 	public MoveMoneyCard(String iPropType, int iRentMultiplier, int iCardId) {
-		super(iCardId);
 		propType = iPropType;
 		rentMultiplier = iRentMultiplier;
 		setCardType();

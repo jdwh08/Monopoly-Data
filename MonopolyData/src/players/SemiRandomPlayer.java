@@ -59,6 +59,8 @@ public class SemiRandomPlayer extends Player {
 			possibleAnytimes.add(Board.canDeMortgage(this, randInt));
 			anytimeVals.add(randInt);
 			//possibleAnytimes.put(Board.canMakeTradeRequest(this));
+			// Anytime 5: Nothing / Stop doing anytimes.
+			possibleAnytimes.add(true);
 		}
 	}
 
@@ -113,11 +115,24 @@ public class SemiRandomPlayer extends Player {
 		
 		if (anytimeOptions.size() > 0) {
 			int randInt = (int)(Math.random() * anytimeOptions.size());
+			if (anytimeOptions.get(randInt) == 5) {
+				return new ArrayList();
+			}
 			// Do a possible anytime
-			if (possibleAnytimes.get(anytimeOptions.get(randInt))) {
+			else if (possibleAnytimes.get(anytimeOptions.get(randInt))) {
+				// If statements hear w/ Math.random() alter probability of doing actions
+				
+				// 1% chance to sell houses
+				if (anytimeOptions.get(randInt) == 2 && Math.random() > 0.01) {
+					return new ArrayList();
+				}
+				// 0.75% chance to mortgage property
+				if (anytimeOptions.get(randInt) == 3 && Math.random() > 0.0075) {
+					return new ArrayList();
+				}
 				ArrayList<Integer> answer = new ArrayList<Integer>();
 				answer.add(anytimeOptions.get(randInt));
-				answer.add(anytimeVals.get(randInt));
+				answer.add(anytimeVals.get(anytimeOptions.get(randInt)));
 				return answer;
 			}
 		}

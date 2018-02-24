@@ -21,9 +21,6 @@ public class Board {
 	Player otherPlayer;
 
 	public Board(Player iCurrentPlayer, Player iOtherPlayer) {
-		initializeProperties();
-		initializeCards();
-
 		numHousesLeft = 32;
 		numHotelsLeft = 12;
 		
@@ -34,6 +31,9 @@ public class Board {
 		pendingTrades = new ArrayList<TradeRequest>();
 		playerLocs.put(currentPlayer, 0);
 		playerLocs.put(otherPlayer, 0);
+		
+		initializeProperties();
+		initializeCards();
 	}
 	
 	/* Instantiates the properties in the board.
@@ -41,6 +41,7 @@ public class Board {
 	 * Postcondition: boardProperties is filled with the properties.
 	 */
 	private void initializeProperties() { // OKAY
+		
 		boardProperties = new Property[40];
 
 		Property go = new Property();
@@ -63,6 +64,7 @@ public class Board {
 		Railroad readingRR = new Railroad(200, null, false);
 		boardProperties[5] = readingRR;
 
+		// TODO: Switch back
 		int[] orientalAvePay = { 6, 30, 90, 270, 400, 550 };
 		Property orientalAve = new ColorProperty(100, null, false, Color.CYAN, 0, false, orientalAvePay);
 		boardProperties[6] = orientalAve;
@@ -499,10 +501,6 @@ public class Board {
 		if (canMortgage(thePlayer, propId)) {
 			((OwnableProperty) boardProperties[propId]).switchMortgageStatus();
 			thePlayer.addMoney(((OwnableProperty) boardProperties[propId]).getMortgageCost());
-			
-		}
-		else {
-			System.out.println("MORTGAGED ENOUGH ALREADY");
 		}
 	}
 	
@@ -515,9 +513,6 @@ public class Board {
 		if (canDeMortgage(thePlayer, propId)) {
 			((OwnableProperty) boardProperties[propId]).switchMortgageStatus();
 			thePlayer.addMoney((int) (- 1.10 * ((OwnableProperty) boardProperties[propId]).getMortgageCost()));
-		}
-		else {
-			System.out.println("DEMORTGAGED ENOUGH ALREADY");
 		}
 	}
 	
@@ -981,7 +976,7 @@ public class Board {
 		for (int i = 0; i < boardProperties.length; i++) {
 			if (boardProperties[i].getPropType() == "ColorProperty") {
 				ColorProperty colorProp = (ColorProperty) boardProperties[i];
-				if (colorProp.owner == thePlayer) {
+				if (colorProp.getOwner() == thePlayer && colorProp.getColor() == theColor) {
 					ownedColorProps.add(i);
 				}
 			}
@@ -1087,6 +1082,26 @@ public class Board {
 	// For future extension.
 	public static ArrayList<TradeRequest> getPendingTrades() {
 		return pendingTrades;
+	}
+	
+	/* Determines if all properties on the board are owned.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @return boolean representing whether all properties that can be owned are owned.
+	 */
+	public boolean isAllPropertiesOwned() {
+		int numOwned = 0;
+		for (Property prop : boardProperties) {
+			if (prop.getPropType() != "Property") {
+				OwnableProperty temp = (OwnableProperty) prop;
+				if (temp.getOwner() != null) {
+					numOwned++;
+				}
+			}
+		}
+		if (numOwned == 28) {
+			return true;
+		}
+		return false;
 	}
 	
 	/* Switches which player is currently making moves.

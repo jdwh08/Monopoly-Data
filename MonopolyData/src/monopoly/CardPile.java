@@ -30,7 +30,7 @@ public class CardPile {
 		int raNum = (int) (Math.random() * available.size()); //Chooses random card
 		Card answer = available.get(raNum);
 		available.remove(answer); // Removes it from available
-		if (ownsGetOutOfJail == null && answer.getCardId() == 0) {
+		if (ownsGetOutOfJail == null && answer.getCardType() == "GetOutOfJailCard") {
 			ownsGetOutOfJail = Board.getCurrentPlayer();
 		}
 		else {

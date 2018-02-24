@@ -22,6 +22,10 @@ public class MonopolyRunner {
 	static List<String> writeLines;
 	static Color[] propColors = { Color.MAGENTA, Color.CYAN, Color.PINK, Color.ORANGE, Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE };
 
+	/* Main runner for the code.
+	 * Precondition: N/A
+	 * Postcondition: written file of events
+	 */
 	public static void main(String[] args) throws IOException {
 		// Initialize
 		SemiRandomPlayer playerOne = new SemiRandomPlayer(1500, false);
@@ -33,8 +37,10 @@ public class MonopolyRunner {
 		outputPath = Paths.get(output.getPath());
 		writeLines = new ArrayList<String>();
 		
+		int numTurns = 0;
+		
 		// Main game loop
-		while (playerOne.getMoney() > 0 && playerTwo.getMoney() > 0) {
+		while (playerOne.getMoney() > 0 && playerTwo.getMoney() > 0 && numTurns < 1000) {
 			currentPlayer = Board.getCurrentPlayer();
 
 			boolean hasDoubles = false;
@@ -78,11 +84,16 @@ public class MonopolyRunner {
 				monopolyBoard.goToJail(currentPlayer);
 			}
 			monopolyBoard.switchCurrentPlayer();
+			numTurns++;
 		}
 		
 		Files.write(outputPath, writeLines, Charset.forName("UTF-8"));
 	}
 
+	/* Converts player output for actions into actual effects on the board
+	 * Precondition: The current player has decided upon an action
+	 * Postcondition: The game after the effect. Player, location, action, money added to file and console output.
+	 */
 	public static void doAction() {
 		// Action
 		int actionId = currentPlayer.getAction();
@@ -111,9 +122,13 @@ public class MonopolyRunner {
 		writeLines.add("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Action: " + actionId + " Money: " + currentPlayer.getMoney());
 	}
 	
+	/* Converts player output for anytimes (things which can be done regardless of player location, ex. buying a house) into actual effects on the board
+	 * Precondition: The current player has decided upon an anytime
+	 * Postcondition: The game after the effect. Player, location, anytime, target for the anytime, money added to file and console output.
+	 */
 	public static void doAnytime() {
 		ArrayList<Integer> playerOutput = currentPlayer.getAnytime();
-		if (!playerOutput.isEmpty()) {
+		while (!playerOutput.isEmpty()) {
 			int anytimeId = playerOutput.get(0);
 			
 			switch (anytimeId) {
@@ -135,6 +150,8 @@ public class MonopolyRunner {
 			}
 			System.out.println("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Anytime: " + anytimeId + " Target: " + playerOutput.get(1) + " Money: " + currentPlayer.getMoney());
 			writeLines.add("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Anytime: " + anytimeId + " Target: " + playerOutput.get(1) + " Money: " + currentPlayer.getMoney());
+			
+			playerOutput = currentPlayer.getAnytime();
 		}
 	}
 }

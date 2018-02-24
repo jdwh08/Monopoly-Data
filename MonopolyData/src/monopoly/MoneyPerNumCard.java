@@ -7,7 +7,6 @@ public class MoneyPerNumCard extends Card {
 	
 	// Per Player
 	public MoneyPerNumCard(int iRateOne, int iCardId) {
-		super(iCardId);
 		rateOne = iRateOne;
 		rateTwo = 0;
 		setCardType();
@@ -15,7 +14,6 @@ public class MoneyPerNumCard extends Card {
 	
 	// Per House & Hotel
 	public MoneyPerNumCard(int iRateOne, int iRateTwo, int iCardId) {
-		super(iCardId);
 		rateOne = iRateOne;
 		rateTwo = iRateTwo;
 		setCardType();

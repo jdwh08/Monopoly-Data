@@ -5,7 +5,6 @@ public class MoveCard extends Card {
 	private int moveId;
 	
 	public MoveCard(int ipropId, int iCardId) {
-		super(iCardId);
 		setMoveId(ipropId);
 		setCardType();
 	}
