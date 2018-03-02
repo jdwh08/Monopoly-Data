@@ -338,7 +338,6 @@ public class Board {
 		playerLocs.put(thePlayer, propId);
 		
 		payRent(thePlayer);
-		
 	}
 	
 	/* Moves the player to the location specified by the propId and then have the player pay the rent times the multiplier
@@ -719,6 +718,7 @@ public class Board {
 			if (diceOne == diceTwo) {
 				thePlayer.switchJailStatus();
 				thePlayer.resetTurnInJail();
+				moveTo(thePlayer, playerLocs.get(thePlayer) + diceOne + diceTwo);
 			}
 			else {
 				thePlayer.addTurnInJail();
@@ -726,15 +726,6 @@ public class Board {
 		}
 	}
 
-	/* Makes trade request.
-	 * Precondition: The board is filled with properties, the players are instantiated.
-	 * @param the trade request to be made
-	 * Postcondition: the trade request gets added to pendingTrades.
-	 */
-	// Future extension.
-	protected void makeTradeRequest(TradeRequest tr) {
-		pendingTrades.add(tr);
-	}
 
 	/* Checks if player can move.
 	 * Precondition: The board is filled with properties, the players are instantiated.
@@ -743,6 +734,16 @@ public class Board {
 	 */
 	public boolean canMove(Player thePlayer) {
 		return !thePlayer.isInJail();
+	}
+	
+	/* Makes trade request.
+	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * @param the trade request to be made
+	 * Postcondition: the trade request gets added to pendingTrades.
+	 */
+	// TODO: Future extension.
+	protected void makeTradeRequest(TradeRequest tr) {
+		pendingTrades.add(tr);
 	}
 
 	/* Checks if player can pay tax.
@@ -929,7 +930,7 @@ public class Board {
 	 * @param thePlayer to check.
 	 * @return boolean representing if the player can trade (ie always)
 	 */
-	// For future extension
+	// TODO: For future extension
 	public static boolean canMakeTradeRequest(Player thePlayer) {
 		return true;
 	}

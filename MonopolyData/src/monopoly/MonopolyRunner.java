@@ -33,12 +33,12 @@ public class MonopolyRunner {
 		SemiRandomPlayer playerTwo = new SemiRandomPlayer(1500, false);
 		monopolyBoard = new Board(playerOne, playerTwo);
 		
-		output = new File("monopolyData");
+		output = new File("monopolyData.csv");
 		outputPath = Paths.get(output.getPath());
 		writeLines = new ArrayList<String>();
+		writeLines.add("Player, Location, Action, Anytime, AnytimeTarget, Money");
 		
 		int numTurns = 0;
-		
 		// Main game loop
 		while (playerOne.getMoney() > 0 && playerTwo.getMoney() > 0 && numTurns < 1000) {
 			currentPlayer = Board.getCurrentPlayer();
@@ -53,7 +53,7 @@ public class MonopolyRunner {
 					// Just been sent to jail
 					if (currentPlayer.isInJail()) {
 						System.out.println("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Action: " + -2 + " Money: " + currentPlayer.getMoney());
-						writeLines.add("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Action: " + -2 + " Money: " + currentPlayer.getMoney());
+						writeLines.add("" + currentPlayer + ", " + Board.getPlayerLocs().get(currentPlayer) + ", " + -2 + ", " + ", " + ", " + currentPlayer.getMoney());
 						break;
 					}
 					if (hasDoubles) {
@@ -65,7 +65,7 @@ public class MonopolyRunner {
 				// Just been sent to jail
 				if (currentPlayer.isInJail()) {
 					System.out.println("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Action: " + -2 + " Money: " + currentPlayer.getMoney());
-					writeLines.add("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Action: " + -2 + " Money: " + currentPlayer.getMoney());
+					writeLines.add("" + currentPlayer + ", " + Board.getPlayerLocs().get(currentPlayer) + ", " + -2 + ", " + ", " + ", " + currentPlayer.getMoney());
 					break;
 				}
 
@@ -119,7 +119,7 @@ public class MonopolyRunner {
 			break;
 		}
 		System.out.println("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Action: " + actionId + " Money: " + currentPlayer.getMoney());
-		writeLines.add("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Action: " + actionId + " Money: " + currentPlayer.getMoney());
+		writeLines.add("" + currentPlayer + ", " + Board.getPlayerLocs().get(currentPlayer) + ", " + actionId + ", " + ", " + ", " + currentPlayer.getMoney());
 	}
 	
 	/* Converts player output for anytimes (things which can be done regardless of player location, ex. buying a house) into actual effects on the board
@@ -149,7 +149,7 @@ public class MonopolyRunner {
 				break;
 			}
 			System.out.println("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Anytime: " + anytimeId + " Target: " + playerOutput.get(1) + " Money: " + currentPlayer.getMoney());
-			writeLines.add("Player: " + currentPlayer + " Location: " + Board.getPlayerLocs().get(currentPlayer) + " Anytime: " + anytimeId + " Target: " + playerOutput.get(1) + " Money: " + currentPlayer.getMoney());
+			writeLines.add("" + currentPlayer + ", " + Board.getPlayerLocs().get(currentPlayer) + ", " + ", " + anytimeId + ", " + playerOutput.get(1) + ", " + currentPlayer.getMoney());
 			
 			playerOutput = currentPlayer.getAnytime();
 		}

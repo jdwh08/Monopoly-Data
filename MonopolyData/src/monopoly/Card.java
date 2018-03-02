@@ -7,6 +7,7 @@ public abstract class Card {
 	// Sets the type for the card
 	public abstract void setCardType();
 	
+	// Gets the cardType.
 	public String getCardType() {
 		return cardType;
 	}

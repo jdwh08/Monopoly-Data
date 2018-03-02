@@ -18,7 +18,14 @@ public class CardPile {
 		ownsGetOutOfJail = null;
 	}
 
-	// Draws a card from the pile. Shuffles if necessary.
+	/* Draws a card from the available cards.
+	 * Precondition: The board is filled with properties, the players are instantiated, a player is on a Chance or CommunityChest property.
+	 * @return the card drawn.
+	 * Postcondition: 
+	 * 		If there are no more cards left, the unavailable cards get placed into the available cards.
+	 * 		If the card drawn is a getOutOfJailCard, the owner gets set to thePlayer.
+	 * 		Otherwise, the card gets sent to the unavailable section.
+	 */
 	public Card draw() {
 
 		// Check if need to shuffle
@@ -39,11 +46,16 @@ public class CardPile {
 		return answer;
 	}
 	
+	/* Uses the get out of jail card
+	 * Precondition: The board is filled with properties, the players are instantiated, the player used a getOutOfJailCard to get out of jail.
+	 * Postcondition: The card's owner gets reset, the card gets added to unavailable cards.
+	 */
 	public void useJailCard() {
 		unavailable.add(getOutOfJailCopy);
 		ownsGetOutOfJail = null;
 	}
 
+	// Gets the player that owns the getOutOfJail card.
 	public Player getPlayerOwned() {
 		return ownsGetOutOfJail;
 	}

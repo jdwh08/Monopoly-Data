@@ -6,6 +6,7 @@ public class GetOutOfJailCard extends Card {
 		setCardType();
 	}
 	
+	// Gets the type of the card as a string.
 	@Override
 	public void setCardType() {
 		cardType = "GetOutOfJailCard";
