@@ -7,19 +7,31 @@ import java.util.HashMap;
 
 import players.Player;
 
+// Represents the monopoly board, and additional information associated with it (properties, cards, locations)
 public class Board {
-
+	// An array of the properties found on the monopoly board.
 	private static Property[] boardProperties;
+	// A collection of the cards found in Chance.
 	private static CardPile chance;
+	// A collection of the cards found in Community Chest.
 	private static CardPile communityChest;
+	// An int representing the number of houses that are available to buy.
 	static int numHousesLeft;
+	// An int representing the number of hotels that are available to buy.
 	static int numHotelsLeft;
+	// An int representing the number of players.
 	static int numPlayers;
+	// Relates a player to an int representing location. The int is based on the index in boardProperties, so a player on Go would have a position of 0.
 	static HashMap<Player, Integer> playerLocs;
-	static ArrayList<TradeRequest> pendingTrades;
+	// The player that is currently taking its turn.
 	static Player currentPlayer;
+	// The player that is not taking its turn.
 	Player otherPlayer;
 
+	/* Constructs a Board with two players. Defines properties, cards, houses, hotels, and player locations.
+	 * Precondition: iCurrentPlayer and iOtherPlayer are not null
+	 * Postcondition: The board is set up with houses, hotels, players, locations, properties, and cards.
+	 */
 	public Board(Player iCurrentPlayer, Player iOtherPlayer) {
 		numHousesLeft = 32;
 		numHotelsLeft = 12;
@@ -28,7 +40,6 @@ public class Board {
 		otherPlayer = iOtherPlayer;
 		numPlayers = 2;
 		playerLocs = new HashMap<Player, Integer>();
-		pendingTrades = new ArrayList<TradeRequest>();
 		playerLocs.put(currentPlayer, 0);
 		playerLocs.put(otherPlayer, 0);
 		
@@ -40,7 +51,7 @@ public class Board {
 	 * Precondition: Runner is started, Board is to be instantiated.
 	 * Postcondition: boardProperties is filled with the properties.
 	 */
-	private void initializeProperties() { // OKAY
+	private void initializeProperties() {
 		
 		boardProperties = new Property[40];
 
@@ -64,7 +75,6 @@ public class Board {
 		Railroad readingRR = new Railroad(200, null, false);
 		boardProperties[5] = readingRR;
 
-		// TODO: Switch back
 		int[] orientalAvePay = { 6, 30, 90, 270, 400, 550 };
 		Property orientalAve = new ColorProperty(100, null, false, Color.CYAN, 0, false, orientalAvePay);
 		boardProperties[6] = orientalAve;
@@ -203,21 +213,21 @@ public class Board {
 		iChance.add(toIllinois);
 		MoveCard toStCharles = new MoveCard(11, 3);
 		iChance.add(toStCharles);
-		MoveMoneyCard nearestUtility = new MoveMoneyCard("Utility", 10, 4);
+		MoveMoneyCard nearestUtility = new MoveMoneyCard("Utility", 10);
 		iChance.add(nearestUtility);
-		MoveMoneyCard nearestRR = new MoveMoneyCard("Railroad", 2, 5);
+		MoveMoneyCard nearestRR = new MoveMoneyCard("Railroad", 2);
 		iChance.add(nearestRR);
-		MoveMoneyCard nearestRRTwo = new MoveMoneyCard("Railroad", 2, 6);
+		MoveMoneyCard nearestRRTwo = new MoveMoneyCard("Railroad", 2);
 		iChance.add(nearestRRTwo);
-		MoneyCard bankDividend = new MoneyCard(50, 7);
+		MoneyCard bankDividend = new MoneyCard(50);
 		iChance.add(bankDividend);
 		MoveCard backThree = new MoveCard(-3, 8);
 		iChance.add(backThree);
 		MoveCard goToJail = new MoveCard(10, 9);
 		iChance.add(goToJail);
-		MoneyPerNumCard generalRepairs = new MoneyPerNumCard(-25, -100, 10);
+		MoneyPerNumCard generalRepairs = new MoneyPerNumCard(-25, -100);
 		iChance.add(generalRepairs);
-		MoneyCard poorTax = new MoneyCard(-15, 11);
+		MoneyCard poorTax = new MoneyCard(-15);
 		iChance.add(poorTax);
 		MoveCard toReading = new MoveCard(5, 12);
 		iChance.add(toReading);
@@ -225,7 +235,7 @@ public class Board {
 		iChance.add(toBoardwalk);
 		MoneyPerNumCard chairmanOfBoard = new MoneyPerNumCard(-50, 14);
 		iChance.add(chairmanOfBoard);
-		MoneyCard buildingLoan = new MoneyCard(150, 15);
+		MoneyCard buildingLoan = new MoneyCard(150);
 		iChance.add(buildingLoan);
 		chance = new CardPile(iChance);
 		
@@ -233,31 +243,31 @@ public class Board {
 		ArrayList<Card> iCC = new ArrayList<Card>();
 		iCC.add(outOfJail);
 		iCC.add(toGo);
-		MoneyCard bankError = new MoneyCard(200, 2);
+		MoneyCard bankError = new MoneyCard(200);
 		iCC.add(bankError);
-		MoneyCard doctorsFees = new MoneyCard(-50, 3);
+		MoneyCard doctorsFees = new MoneyCard(-50);
 		iCC.add(doctorsFees);
-		MoneyCard saleStock = new MoneyCard(50, 4);
+		MoneyCard saleStock = new MoneyCard(50);
 		iCC.add(saleStock);
 		MoneyPerNumCard operaNight = new MoneyPerNumCard(50, 14);
 		iCC.add(operaNight);
-		MoneyCard holidayFund = new MoneyCard(100, 6);
+		MoneyCard holidayFund = new MoneyCard(100);
 		iCC.add(holidayFund);
-		MoneyCard incomeTaxRefund = new MoneyCard(20, 7);
+		MoneyCard incomeTaxRefund = new MoneyCard(20);
 		iCC.add(incomeTaxRefund);
-		MoneyCard lifeInsurance = new MoneyCard(100, 8);
+		MoneyCard lifeInsurance = new MoneyCard(100);
 		iCC.add(lifeInsurance);
-		MoneyCard hospitalFee = new MoneyCard(-100, 9);
+		MoneyCard hospitalFee = new MoneyCard(-100);
 		iCC.add(hospitalFee);
-		MoneyCard schoolFee = new MoneyCard(-150, 10);
+		MoneyCard schoolFee = new MoneyCard(-150);
 		iCC.add(schoolFee);
-		MoneyCard consultancyFee = new MoneyCard(25, 11);
+		MoneyCard consultancyFee = new MoneyCard(25);
 		iCC.add(consultancyFee);
-		MoneyPerNumCard streetRepairs = new MoneyPerNumCard(-40, -115, 12);
+		MoneyPerNumCard streetRepairs = new MoneyPerNumCard(-40, -115);
 		iCC.add(streetRepairs);
-		MoneyCard secondBeautyPrize = new MoneyCard(10, 13);
+		MoneyCard secondBeautyPrize = new MoneyCard(10);
 		iCC.add(secondBeautyPrize);
-		MoneyCard inherit = new MoneyCard(100,14);
+		MoneyCard inherit = new MoneyCard(100);
 		iCC.add(inherit);
 		communityChest = new CardPile(iCC);
 	}
@@ -362,30 +372,26 @@ public class Board {
 	 */
 	protected void payTax(Player thePlayer) {
 		if (playerLocs.get(thePlayer) == 4) {
+			// income tax is $200 now
 			thePlayer.addMoney(-200);
 		}
 		else if (playerLocs.get(thePlayer) == 38) {
 			// new US edition sets luxury tax at $100 not $75
 			thePlayer.addMoney(-100);
 		}
-		else {
-			// Didn't need to pay taxes.
-		}
 	}
 
 	/* Makes thePlayer pay for the property.
 	 * Precondition: The board is filled with properties, the players are instantiated.
-	 * @param the Player wanting to buy the property, the index of the property to buy
+	 * @param the Player wanting to buy the property
 	 * Postcondition: The player owns the property and has their money reduced by the property cost if they can buy the property.
 	 */
-	protected void buyProperty(Player thePlayer, int propId) {
+	protected void buyProperty(Player thePlayer) {
+		int propId = playerLocs.get(thePlayer);
 		if (canBuyProperty(thePlayer, propId)) {
 			OwnableProperty temp = (OwnableProperty) boardProperties[propId];
 			temp.setOwner(thePlayer);
 			thePlayer.addMoney(-(temp.getCost()));
-		}
-		else {
-
 		}
 	}
 
@@ -405,7 +411,7 @@ public class Board {
 	}
 
 	/* Buys a house on one of the properties of the color specified.
-	 * Precondition: The board is filled with properties, the players are instantiated.
+	 * Precondition: The board is filled with properties, the players are instantiated, theColor is not null.
 	 * @param the Player wanting to buy a house, the color of the property group they want to build a house on.
 	 * Postcondition: If legal, the property with the least number of houses on it with that color gets an additional house. The player pays the house cost.
 	 */
@@ -438,12 +444,15 @@ public class Board {
 					}
 				}
 
+				// Add houses / hotel.
 				((ColorProperty) boardProperties[minHouseId]).addHouses(1);
 				thePlayer.addMoney(-houseCost(((ColorProperty) boardProperties[minHouseId]).getColor()));
 				if (((ColorProperty) boardProperties[minHouseId]).getNumHouses() == 5) {
+					// Added a hotel.
 					numHotelsLeft--;
 				}
 				else {
+					// Added a house.
 					numHousesLeft--;
 				}
 			}
@@ -597,7 +606,7 @@ public class Board {
 						}
 					}
 				}
-				
+				// Pay for house & hotel repairs.
 				thePlayer.addMoney(temp.rateOne * numHouses + temp.rateTwo * numHotels);
 				break;
 			}
@@ -612,7 +621,7 @@ public class Board {
 					break;
 				}
 			}
-			// Find the nearest property, wrap around go
+			// Find the nearest property, wrap around go to the player's location. Activates if cannot find a property yet of that type yet.
 			if (nearestProp == playerLocs.get(thePlayer)) {
 				for (int i = 0; i < playerLocs.get(thePlayer); i++) {
 					if (boardProperties[i].getPropType().equals(tempMMC.getPropType())) {
@@ -736,15 +745,6 @@ public class Board {
 		return !thePlayer.isInJail();
 	}
 	
-	/* Makes trade request.
-	 * Precondition: The board is filled with properties, the players are instantiated.
-	 * @param the trade request to be made
-	 * Postcondition: the trade request gets added to pendingTrades.
-	 */
-	// TODO: Future extension.
-	protected void makeTradeRequest(TradeRequest tr) {
-		pendingTrades.add(tr);
-	}
 
 	/* Checks if player can pay tax.
 	 * Precondition: The board is filled with properties, the players are instantiated.
@@ -1077,12 +1077,6 @@ public class Board {
 	// Gets a HashMap relating the players to the index of the boardProperty they are on.
 	public static HashMap<Player, Integer> getPlayerLocs() {
 		return playerLocs;
-	}
-	
-	// Gets an ArrayList of the current trade requests.
-	// For future extension.
-	public static ArrayList<TradeRequest> getPendingTrades() {
-		return pendingTrades;
 	}
 	
 	/* Determines if all properties on the board are owned.

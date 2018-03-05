@@ -3,21 +3,37 @@ package players;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import monopoly.Board;
 
 public class SemiRandomPlayer extends Player {
 	
+	/* Constructs a SemiRandomPlayer.
+	 * @param: the amount of money the player has, whether the player is in jail.
+	 */
 	public SemiRandomPlayer(int cMoney, boolean cInJail) {
 		super(cMoney, cInJail);
 	}
 
+	// ArrayList representing the potential actions the player can do based on the property it is on. 
+	// These are in the order specified in GetPossibleActions. 
+	// True means the action is legal, and false means illegal.
 	ArrayList<Boolean> possibleActions = new ArrayList<Boolean>();
+	
+	// ArrayList representing the potential anytimes the player can do. These are actions that can be done anytime (ex. houses, mortgaging)
+	// These are in the order specified in GetPossibleAnytimes. 
+	// True means the action is legal, and false means illegal.
 	ArrayList<Boolean> possibleAnytimes = new ArrayList<Boolean>();
+	
+	// ArrayList representing the value the anytime is associated with.
+		// When buying houses on a property, anytimeVals includes the id for the color of the property.
+		// When mortgaging, anytimeVals includes the id of the property to mortgage.
 	ArrayList<Integer> anytimeVals = new ArrayList<Integer>();
-	Color[] propColors = { Color.MAGENTA, Color.CYAN, Color.PINK, Color.ORANGE, Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE }; //8
+	
+	// An array representing the possible colors of properties. The id for colors comes from the index here.
+	Color[] propColors = { Color.MAGENTA, Color.CYAN, Color.PINK, Color.ORANGE, Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE };
 
+	// Method to get what the player could potentially do.
 	@Override
 	void getPossibleActions() {
 		// Action 0: pay tax
@@ -33,7 +49,8 @@ public class SemiRandomPlayer extends Player {
 		// Action 5: roll dice to try and get out of jail
 		possibleActions.add(Board.canRollOutJail(this));
 	}
-
+	
+	// Method to choose what the player will do for "anytimes".
 	// Mortgaging & DeMortgaging, buying & selling houses which do not depend on player position
 	void getPossibleAnytimes() {
 		ArrayList<Integer> getProps = Board.ownedProperties(this);
@@ -63,14 +80,14 @@ public class SemiRandomPlayer extends Player {
 			possibleAnytimes.add(true);
 		}
 	}
-
+	
+	// Method to choose what the player will do.
+	// It chooses randomly between available actions identified in getPossibleActions.
 	@Override
-	public int getAction() {
+	public int getAction() {		
 		possibleActions.clear();
 		getPossibleActions();
-		boolean hasAction = false;
-		// TODO: Remove actions that have been false
-		// TODO: Check if there are no actions possible
+
 		ArrayList<Integer> actionOptions = new ArrayList<Integer>(); // possibleActions which can also be done
 		for (int i = 0; i < possibleActions.size(); i++) {
 			if (possibleActions.get(i)) {
@@ -86,19 +103,14 @@ public class SemiRandomPlayer extends Player {
 		if (actionOptions.size() > 0) {
 			// Choose a random action
 			int randInt = (int)(Math.random() * actionOptions.size());
-			// Do nothing
-			if (actionOptions.get(randInt) == -1) {
-				return actionOptions.get(randInt);
-			}
-			// Do a possible action
-			if (possibleActions.get(actionOptions.get(randInt))) {
-				return actionOptions.get(randInt);
-			}
+			
+			return actionOptions.get(randInt);
 		}
 		return -1;
 	}
 	
-	// Returns arraylist with value 1 being the anytime and value 2 being the integer for that anytime
+	// Method to choose what the player will do for "anytimes". These are actions that can be performed anytime. Ex. Buying houses
+	// @return: arrayList with first value being the anytime and second value being the integer for that anytime
 	public ArrayList getAnytime() {
 		possibleAnytimes.clear();
 		anytimeVals.clear();
@@ -139,6 +151,8 @@ public class SemiRandomPlayer extends Player {
 		return new ArrayList();
 	}
 	
+	// Returns a String representing the player's Hash Code.
+	// This is used for player identification.
 	public String toString() {
 		return "" + this.hashCode();
 	}

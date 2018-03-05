@@ -1,10 +1,11 @@
 // Jonathan Wang
 package monopoly;
 
+// Represents a basic property with no other functions. Ex. Free Parking.
 public class Property {
-	// That's it.
-	// Actions here are determined by the board, not by the property. Because.
-		
+	
+	/* Returns the type of the property as a string.
+	 */
 	public String getPropType() {
 		return "Property";
 	}

@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import players.Player;
 
-// TODO:
-// Make trade requests
+// Future extension project.
+// Requests to trade properties, money, or getOutOfJail cards to other players.
 public class TradeRequest {
 	Player sender;
 	Player receiver;

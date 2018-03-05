@@ -6,12 +6,22 @@ import java.util.HashMap;
 
 import players.Player;
 
+// Represents a collection of Cards, ie. Chance or Community Chest.
 public class CardPile {
-	ArrayList<Card> available; // In the pile
-	ArrayList<Card> unavailable; // Out of the pile
+	// ArrayList of the cards that are in the pile & can be drawn.
+	ArrayList<Card> available;
+	// An arrayList of the cards that have been drawn already, and are not held by players.
+	ArrayList<Card> unavailable;
+	// A copy of the getOutOfJail card, so only 1 instantiation is needed.
 	private Card getOutOfJailCopy = new GetOutOfJailCard();
+	// The player that owns the getOutOfJail card. Can be null indicating no one owns.
 	Player ownsGetOutOfJail;
 
+	/* Constructs a new CardPile.
+	 * Precondition: a CardPile needs to be instantiated.
+	 * @param: an ArrayList of cards that are available in the card pile.
+	 * Postcondition: the cardPile is instantiated with the available cards.
+	 */
 	public CardPile(ArrayList<Card> cAvailable) {
 		available = cAvailable;
 		unavailable = new ArrayList<Card>();
@@ -27,17 +37,20 @@ public class CardPile {
 	 * 		Otherwise, the card gets sent to the unavailable section.
 	 */
 	public Card draw() {
-
-		// Check if need to shuffle
+		// Check if need to shuffle the deck
 		if (available.size() == 0) {
+			// Shuffles by adding the unavailable cards back into the available deck.
+			// Note that since cards are drawn randomly, there is no need to randomize here.
 			available = unavailable;
 			unavailable = new ArrayList<Card>();
 		}
 
-		int raNum = (int) (Math.random() * available.size()); //Chooses random card
+		// Chooses random card
+		int raNum = (int) (Math.random() * available.size());
 		Card answer = available.get(raNum);
 		available.remove(answer); // Removes it from available
 		if (ownsGetOutOfJail == null && answer.getCardType() == "GetOutOfJailCard") {
+			// Gives ownership of the GetOutOfJail card to the player that drew it.
 			ownsGetOutOfJail = Board.getCurrentPlayer();
 		}
 		else {

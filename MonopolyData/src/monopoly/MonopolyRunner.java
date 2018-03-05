@@ -15,16 +15,22 @@ import players.Player;
 import players.SemiRandomPlayer;
 
 public class MonopolyRunner {
+	// The current player
 	static Player currentPlayer;
+	// The monopolyBoard.
 	static Board monopolyBoard;
+	// The path for the output file
 	private static Path outputPath;
+	// The output file
 	private static File output;
+	// A List of Strings representing the lines to be written to the output file.
 	static List<String> writeLines;
+	// An array representing all the possible colors for the colorProperties.
 	static Color[] propColors = { Color.MAGENTA, Color.CYAN, Color.PINK, Color.ORANGE, Color.RED, Color.YELLOW, Color.GREEN, Color.BLUE };
 
 	/* Main runner for the code.
-	 * Precondition: N/A
-	 * Postcondition: written file of events
+	 * Precondition: The program is started.
+	 * Postcondition: Written file of events.
 	 */
 	public static void main(String[] args) throws IOException {
 		// Initialize
@@ -103,7 +109,7 @@ public class MonopolyRunner {
 			monopolyBoard.payTax(currentPlayer);
 			break;
 		case 1:
-			monopolyBoard.buyProperty(currentPlayer, Board.getPlayerLocs().get(currentPlayer));
+			monopolyBoard.buyProperty(currentPlayer);
 			break;
 		case 2:
 			monopolyBoard.drawCard(currentPlayer);

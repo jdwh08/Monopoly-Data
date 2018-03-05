@@ -3,12 +3,24 @@ package monopoly;
 
 import players.Player;
 
+// Represents properties that can be owned. 
+// Note that this is mainly used as a parent class for Utility, ColorProperty, and Railroad to take advantage of inheritance.
+// Secondary use is as a reliable cast for these subclasses when all that is needed is fields like the owner or rent.
 public class OwnableProperty extends Property {
+	// The cost of buying the property.
 	private int cost;
-	private int mortgageCost; // Amount of money given to player for mortgaging
+	// The amount of money given for mortgaging the property.
+	private int mortgageCost;
+	// The owner of the property
 	Player owner;
+	// Boolean representing if the property is mortgaged.
 	boolean isMortgaged;
 	
+	/* Constructs a OwnableProperty
+	 * Precondition: an OwnableProperty needs to be instantiated.
+	 * @param: the cost of buying the property, the owner, a boolean representing if the property is mortgaged.
+	 * Postcondition: the OwnableProperty is constructed.
+	 */
 	public OwnableProperty(int cCost, Player cOwner, boolean cIsMortgaged) {		
 		cost = cCost;
 		mortgageCost = cCost / 2;
@@ -16,7 +28,8 @@ public class OwnableProperty extends Property {
 		isMortgaged = cIsMortgaged;
 	}
 	
-	// Abstract-ish method, meant to be overridden. Gets the rent from landing on the property.
+	// Gets the rent for landing on the property.
+	// Meant to be overridden by subclasses.
 	public int getRent() {
 		return 0;
 	}
@@ -35,11 +48,11 @@ public class OwnableProperty extends Property {
 	public int getMortgageCost() {
 		return mortgageCost;
 	}
-	
+	// Gets whether the property is mortgaged.
 	public boolean getIsMortgaged() {
 		return isMortgaged;
 	}
-	
+	// Switches whether the property is mortgaged.
 	public void switchMortgageStatus() {
 		isMortgaged = !isMortgaged;
 	}

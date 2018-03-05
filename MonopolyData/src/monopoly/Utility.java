@@ -3,8 +3,12 @@ package monopoly;
 
 import players.Player;
 
+// Utilities.
 public class Utility extends OwnableProperty {
 	
+	/* Constructs a Utility.
+	 * @param: the cost of buying, the owner, whether it is mortgaged.
+	 */
 	public Utility(int cCost, Player cOwner, boolean cIsMortgaged) {
 		super(cCost, cOwner, cIsMortgaged);
 	}
@@ -26,14 +30,11 @@ public class Utility extends OwnableProperty {
 	}
 	
 	// Gets rent from landing on utility from a MoveMoneyCard. These always have the player pay 10x the roll.
+	@Override
 	public int getRent(int multiplier) {
 		return Board.rollDice() * multiplier;
 	}
-	
-	// "Base" rent without multiple (IE sum of two dice). To be used for the moveMoneyCard for utilities
-	public int baseRent() {
-		return Board.rollDice();
-	}
+
 	// Gets the property type.
 	@Override
 	public String getPropType() {

@@ -1,9 +1,17 @@
 // Jonathan Wang
 package monopoly;
 
+// Cards that move the player.
 public class MoveCard extends Card {
+	// An int representing the id to move the player to, OR -3 representing "Move back three spaces"
+		// Note that id's are based on the index of properties in boardProperties in Board.
 	private int moveId;
 	
+	/* Constructs a MoveCard.
+	 * Precondition: a MoveCard needs to be instantiated.
+	 * @param: the int representing the id to move the player to OR -3 representing "Move back three spaces"
+	 * Postcondition: the Card is instantiated.
+	 */
 	public MoveCard(int ipropId, int iCardId) {
 		setMoveId(ipropId);
 		setCardType();
