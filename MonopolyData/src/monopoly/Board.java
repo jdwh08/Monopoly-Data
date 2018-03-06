@@ -405,9 +405,6 @@ public class Board {
 			OwnableProperty temp = (OwnableProperty) boardProperties[propId];
 			temp.setOwner(newOwner);
 		}
-		else {
-			
-		}
 	}
 
 	/* Buys a house on one of the properties of the color specified.
@@ -923,16 +920,6 @@ public class Board {
 			return true;
 		}
 		return false;
-	}
-
-	/* Checks if player can make trade requests.
-	 * Precondition: The board is filled with properties, the players are instantiated.
-	 * @param thePlayer to check.
-	 * @return boolean representing if the player can trade (ie always)
-	 */
-	// TODO: For future extension
-	public static boolean canMakeTradeRequest(Player thePlayer) {
-		return true;
 	}
 
 	/* Checks if property can be owned

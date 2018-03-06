@@ -2,7 +2,6 @@
 package monopoly;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import players.Player;
 

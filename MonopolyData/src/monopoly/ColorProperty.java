@@ -34,7 +34,6 @@ public class ColorProperty extends OwnableProperty {
 	 * Precondition: the property is instantiated, a player needs to know the rent for this property.
 	 * @return: an int representing the cost of rent.
 	 */
-	
 	@Override
 	public int getRent() {
 		if (owner != null) {
